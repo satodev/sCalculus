@@ -8,5 +8,5 @@ app.use('/', routes);
 app.use('/views', express.static(__dirname+'/views'));
 app.use('/node_modules', express.static(__dirname+'/node_modules'));
 app.listen(port, ()=>{
-	console.log('Server listening on port 8080');
+	console.log('Server listening on port '+port);
 });
