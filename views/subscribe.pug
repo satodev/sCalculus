@@ -1,0 +1,11 @@
+doctype html
+html
+	head
+		title Subscribe
+	body
+		h1 Hey
+		form(id="formSubscribe", action="/sub", method="POST")
+			input(type="text", name="UserName", placeholder="User Name")
+			input(type="password", name="UserPwd", placeholder="Password")
+			input(type="password", name="VUserPwd", placeholder="Retype Password")
+			input(type="submit")

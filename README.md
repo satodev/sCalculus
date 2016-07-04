@@ -42,7 +42,7 @@ Considering that, I will not provide as much possibilities but it may be improve
 - Mongoose
 - AngularJs
 - Less
-- OAuth
+- OAuth2.0
 
 ## To Do 
  - [ ] User Management
