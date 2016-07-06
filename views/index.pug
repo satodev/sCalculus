@@ -1,17 +1,17 @@
 doctype html
 html(ng-app="scalculus", ng-cloak)
 	head 
-		title Jade Template Base
+		title sCalculus
 		link(rel="stylesheet", type="text/css", href="/views/css/style.css")
 	body(ng-controller="sCalCtrl")
 		div
 			h1 Insert Auth Module here
 			h2 Subscribe
 			input(type="text",ng-model="userName", placeholder="Pseudo")
-			input(type="password",ng-model="userPwd", placeholder="Password")
+			input(type="password",ng-model="userPwd", ng-keyup="passwordConfirm($event)", placeholder="Password")
 			input(type="password",ng-model="vuserPwd", placeholder="Enter Password Again")
-			input(type="submit", ng-if="vuserPwd == userPwd", ng-click="subscribe()")
-			span(ng-if="vuserPwd != userPwd") Enter the same password
+			input(type="submit", ng-if="passConf && userPwd == vuserPwd", ng-click="subscribe()")
+			span(ng-if="stateSub") {{stateSub}}
 
 			h2 Log In
 			input(type="text", ng-model="logUser", placeholder="Pseudo")
@@ -22,16 +22,29 @@ html(ng-app="scalculus", ng-cloak)
 			h1 Insert Grid System Here
 			h2 Grid
 			p#grid Hello i'm grid - wait for loading
-			textarea
-			textarea
-			textarea
-			textarea
-			textarea
-			textarea
+			div#sCalculus
+				textarea
+				textarea
+				textarea
+				textarea
+				textarea
+				textarea
 		div 
 			h1 Insert Function system Here
+			h2 Basic Functions
+			div#functions
+				button Select_mode
+				button Add
+				button Substract
+				button Multiply
+				button Divide
+			h2 Custom Functions 
+			div#custom_function
+				button log
 		div 
 			h1 Insert status bar here
+			div#status
+				p status
 
 		script(src="/node_modules/angular/angular.min.js")
 		script(src="/views/js/script.js")
