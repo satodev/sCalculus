@@ -11,13 +11,19 @@ html(ng-app="scalculus", ng-cloak)
 			input(type="password",ng-model="userPwd", ng-keyup="passwordConfirm($event)", placeholder="Password")
 			input(type="password",ng-model="vuserPwd", placeholder="Enter Password Again")
 			input(type="submit", ng-if="passConf && userPwd == vuserPwd", ng-click="subscribe()")
+			span(ng-show="register_loading") Loading...
 			span(ng-if="stateSub") {{stateSub}}
 
 			h2 Log In
 			input(type="text", ng-model="logUser", placeholder="Pseudo")
 			input(type="password", ng-model="logPwd", placeholder="Password")
 			input(type="submit", ng-click="login()")
+			span(ng-show="Login_loading") Loading...
 			span(ng-if="loginStatus && logUser && logPwd") {{loginStatus}}
+			
+			h2 Disconnect
+			span(ng-show('user_log')) {{user_log}}
+			button(ng-click="disconnect()") Disconnect
 		div 
 			h1 Insert Grid System Here
 			h2 Grid

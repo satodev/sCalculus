@@ -15,6 +15,7 @@ const 	express = require("express"),
 		md : mdp,
 		mgU : null,
 		pwd : "password!d?45",
+		query : null,
 		//init 
 		initUserSchema : ()=>{
 			m.defineUModel();
@@ -46,6 +47,21 @@ const 	express = require("express"),
 						});
 					}
 				});
+			}
+		},
+		qfindUser : (user)=>{
+			if(user){
+				m.query = m.mgU.find({name:user});
+			}
+		},
+		qinsertUser: (user, mdp)=>{
+			if(user && mdp){
+				m.query = new m.mgU({name:user, password:m.Hmac(mdp)});
+			}
+		},
+		login : (user, pwd)=>{
+			if(user, pwd){
+				m.query = m.mgU.findOne({name: user, password: m.Hmac(pwd)});
 			}
 		},
 		Hmac : (password)=>{

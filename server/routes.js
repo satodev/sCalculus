@@ -32,15 +32,38 @@ routes.get('/', (req, res)=>{
 //});
 routes.post('/sub', (req,res)=>{
 	data = {
+		method : req.body.method,
 		pseudo : req.body.pseudo,
 		pwd : req.body.pwd
 	}
-	if(data.pseudo && data.pwd){
+	if(data.method == 'seekUser'){
 		m.initUserSchema();
-		m.insertSub(data.pseudo, data.pwd);
-		//shere
-		res.send();		
-	}else{
+		m.qfindUser(data.pseudo)
+		m.connect()
+		m.query.exec((err,user)=>{
+			if(err) console.log(err);
+			if(user.length > 0){
+				res.send('user');
+				m.disconnect();
+			}else{
+				res.send('nuser');
+				m.disconnect();
+			}
+		});
+	}
+	if(data.method == 'insertUser'){
+		m.connect();
+		m.initUserSchema();
+		m.qinsertUser(data.pseudo, data.pwd);
+		m.query.save((err,data)=>{
+			if(err) console.log(err);
+			console.log(data);
+			res.send('cuser');
+			m.disconnect();
+			
+		});
+	}
+	if(data.method == 'Null'){
 		res.send('nope');
 	}
 });
@@ -49,6 +72,13 @@ routes.post('/login', (req,res)=>{
 		pseudo :req.body.pseudo,
 		pwd : req.body.pwd
 	}
-	res.send(data);
+	m.initUserSchema();
+	m.login(data.pseudo, data.pwd);
+	m.connect();
+	m.query.exec((err, user)=>{
+		if(err) console.log(err);
+		res.send(user);
+		m.disconnect();
+	});
 });
 module.exports = routes;
