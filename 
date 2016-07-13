@@ -1,5 +1,14 @@
 var app = angular.module('scalculus', []);
-app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe',($scope, $http, login, subscribe)=>{
+app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'getCookieUser',($scope, $http, login, subscribe, getCookieUser)=>{
+	if(getCookieUser == 0){
+		$scope.user_log = '';
+	}else{
+		$scope.user_log = getCookieUser;	
+	}
+	$scope.disconnect = function(){
+		document.cookie = 'username=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+		$scope.user_log = '';
+	}
 	$scope.passwordConfirm = function(){
 		if($scope.userPwd && $scope.userPwd.length > 3){
 			$scope.stateSub = 'Correct Password Format';
@@ -11,22 +20,25 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe',($scope, $htt
 	}
 	$scope.subscribe = function(){
 		if($scope.userName && $scope.userPwd == $scope.vuserPwd){
-			$scope.stateSub = ' OK ';
 			subscribe.defVar('user', $scope.userName);
 			subscribe.defVar('pwd', $scope.userPwd);
 			$scope.register_loading = true;
 			subscribe.postSub('seekUser').then((fullfill)=>{
-				$scope.stateSub = 'User already Exists';
+				if(fullfill.data == 'user'){
+					$scope.stateSub = 'User already Exists';
+					$scope.register_loading = false;
+				}
+				if(fullfill.data == 'nuser'){
+					subscribe.postSub('insertUser').then((success)=>{
+						$scope.stateSub = 'User Created';
+					}, (fail)=>{
+						$scope.stateSub = 'Fail to Create User';
+					}).finally(()=>{
+						$scope.register_loading = false;	
+					});
+				}
 			}, (failure)=>{
-				subscribe.postSub('insertUser').then(fullfill)=>{
-					$scope.stateSub = 'User registered';
-				}, (failure)=>{
-					$scope.stateSub = 'Error While registering User';	
-				}).finally(()=>{
-				$scope.register_loading = false;
-			})
-			}).finally(()=>{
-				$scope.registered_loading = false;
+				$scope.stateSub = 'Fail to Connect to Db';
 			});
 			$scope.userName = "";
 			$scope.userPwd = "";
@@ -40,7 +52,15 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe',($scope, $htt
 		login.setP($scope.logPwd);
 		$scope.Login_loading = true;
 		login.sendServer().then((res)=>{
-			$scope.loginStatus = "You are now connected as : "+res.data.name;
+			if(res.data.name){
+				$scope.loginStatus = "You are now connected as : "+res.data.name;
+				var d = new Date();
+				d.setTime(d.getTime()+(10*24*60*60*1000));
+				document.cookie= 'username='+res.data.name+'; expires='+ d.toUTCString();
+				$scope.user_log = res.data.name;	
+			}else{
+				$scope.loginStatus = 'Fail to Authenticate';
+			}
 		}).finally(()=>{
 			$scope.Login_loading = false;	
 		});
@@ -96,30 +116,31 @@ app.factory('login', ($http)=>{
 		}
 	};
 });
-app.factory('login', ($http)=>{
-	var login = {
+app.factory('cookieManager', ()=>{
+	var cm = {
+		cookie:null,
+		id : null,
 		user : null,
-		pwd : null,
-		setUser: (user)=>{
-			if(user){
-				login.user = user;
+		read : ()=>{
+			var x = document.cookie;
+			var un = x.substr(x.trim().search('username')).split('=');
+			console.log(un);
+			if(un[1]){
+				return un[1];
+			}else{
+				return 0
 			}
 		},
-		setPwd: (pwd)=>{
-			if(pwd){
-				login.pwd =  pwd;	
-			}
+		write : ()=>{
+
 		},
-	};
-	return {
-		setU :(user)=>{
-			login.setUser(user);
-		},
-		setP :(pwd)=>{
-			login.setPwd(pwd);
-		},
-		sendServer :()=>{
-			return $http.post('/login', {pseudo: login.user, pwd: login.pwd});
+		del : ()=>{
+
 		}
-	};
+	}
+	return {
+		r: cm.read(),
+		w: cm.write(),
+		d: cm.del()
+	}
 });

@@ -1,13 +1,23 @@
 var app = angular.module('scalculus', []);
-app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'getCookieUser',($scope, $http, login, subscribe, getCookieUser)=>{
-	if(getCookieUser == 0){
-		$scope.user_log = '';
+app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManager', 'gridManager',($scope, $http, login, subscribe, cookieManager, gridManager)=>{
+	var username = cookieManager.r(0);
+	if(username){
+		$scope.user_log = username;
+		$scope.user_id = cookieManager.r(1);
+		gridManager.gen();
+		gridManager.create();
 	}else{
-		$scope.user_log = getCookieUser;	
+		$scope.user_log = '';
+		$scope.user_id = '';
 	}
 	$scope.disconnect = function(){
-		document.cookie = 'username=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+		console.log('pass');
+		for(var i = 0; i < cookieManager.array.length; i++){
+			cookieManager.d(i);
+		}
 		$scope.user_log = '';
+		$scope.user_id = '';
+		gridManager.del();
 	}
 	$scope.passwordConfirm = function(){
 		if($scope.userPwd && $scope.userPwd.length > 3){
@@ -51,13 +61,16 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'getCookieUs
 		login.setU($scope.logUser);
 		login.setP($scope.logPwd);
 		$scope.Login_loading = true;
+		$scope.loginStatus = '';
 		login.sendServer().then((res)=>{
 			if(res.data.name){
 				$scope.loginStatus = "You are now connected as : "+res.data.name;
-				var d = new Date();
-				d.setTime(d.getTime()+(10*24*60*60*1000));
-				document.cookie= 'username='+res.data.name+'; expires='+ d.toUTCString();
+				cookieManager.w(0, res.data.name);
+				cookieManager.w(1, res.data._id);
+				cookieManager.w(3, res.data.date);
 				$scope.user_log = res.data.name;	
+				$scope.user_id = res.data._id;
+				gridManager.gen();
 			}else{
 				$scope.loginStatus = 'Fail to Authenticate';
 			}
@@ -65,90 +78,4 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'getCookieUs
 			$scope.Login_loading = false;	
 		});
 	}
-	var grid = document.getElementById('grid');
-	grid.innerHTML = "Hello, i've been catched";
 }]);
-app.factory('subscribe', ($http)=>{
-	var sub = {
-		user : null,
-		pwd : null,
-		method : null,
-		defineVar: (data, value)=>{
-			if(sub.hasOwnProperty(data)){
-				sub[data] = value;
-			}
-		}
-	};
-	return {
-		defVar : (prop, value)=>{
-			sub.defineVar(prop,value);	
-		},
-		postSub : (type)=>{
-			sub.defineVar('method', type);
-			return $http.post('/sub', {method: sub.method, pseudo: sub.user, pwd:sub.pwd}); 
-		}
-	}
-});
-app.factory('login', ($http)=>{
-	var login = {
-		user : null,
-		pwd : null,
-		setUser: (user)=>{
-			if(user){
-				login.user = user;
-			}
-		},
-		setPwd: (pwd)=>{
-			if(pwd){
-				login.pwd =  pwd;	
-			}
-		},
-	};
-	return {
-		setU :(user)=>{
-			login.setUser(user);
-		},
-		setP :(pwd)=>{
-			login.setPwd(pwd);
-		},
-		sendServer :()=>{
-			return $http.post('/login', {pseudo: login.user, pwd: login.pwd});
-		}
-	};
-});
-app.factory('login', ($http)=>{
-	var login = {
-		user : null,
-		pwd : null,
-		setUser: (user)=>{
-			if(user){
-				login.user = user;
-			}
-		},
-		setPwd: (pwd)=>{
-			if(pwd){
-				login.pwd =  pwd;	
-			}
-		},
-	};
-	return {
-		setU :(user)=>{
-			login.setUser(user);
-		},
-		setP :(pwd)=>{
-			login.setPwd(pwd);
-		},
-		sendServer :()=>{
-			return $http.post('/login', {pseudo: login.user, pwd: login.pwd});
-		}
-	};
-});
-app.factory('getCookieUser', ()=>{
-	var x = document.cookie;
-	var un = x.substr(x.trim().search('username')).split('=');
-	if(un[1]){
-		return un[1];
-	}else{
-		return 0
-	}
-});
