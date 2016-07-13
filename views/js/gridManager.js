@@ -1,9 +1,9 @@
 app.factory('gridManager', ($http)=>{
 	var grid = {
-		create : (width, height)=>{
+		create : ()=>{
 			let container = document.getElementById('sCalculus');
-			for(var i = 0; i < 10||height; i++){
-				for(var j = 0; j < 26||width; j++){
+			for(var i = 0; i < 10; i++){
+				for(var j = 0; j < 26; j++){
 					if(i == 0 && j == 0){
 						container.innerHTML += '<textarea class="box display disable reduce" id="'+i+'" disabled>x:y</textarea>';		
 					}else if(j == 0){
@@ -25,7 +25,7 @@ app.factory('gridManager', ($http)=>{
 		}
 	}
 	return {
-		create : (width, height)=>{grid.create(width, height);},
+		create : ()=>{grid.create();},
 		gen :()=>{grid.gen()},
 		del: ()=>{grid.del()}
 	}
