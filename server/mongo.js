@@ -12,7 +12,7 @@ const 	express = require("express"),
 		id_user: String,
 		box: {},
 	});
-	let db = mg.connection;
+	var db = mg.connection;
 	db.on('error', (err)=>{
 		console.log('Mongoose connection error : '+ err);
 		mg.disconnect();
