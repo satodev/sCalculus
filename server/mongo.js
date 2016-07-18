@@ -8,21 +8,43 @@ const 	express = require("express"),
 		password: String,
 		date:{type:Date, default:Date.now}
 	});
+	gridSchema = mg.Schema({
+		id_user: String,
+		box: {},
+	});
+	let db = mg.connection;
+	db.on('error', (err)=>{
+		console.log('Mongoose connection error : '+ err);
+		mg.disconnect();
+	});
+	db.once('open', ()=>{
+		console.log('Mg opened');
+	});
+	db.once('close', ()=>{
+		console.log('Mg closed');
+	});
 	//defineExport obj
 	m = {
 		//var
 		u : user,
 		md : mdp,
 		mgU : null,
+		mgG : null,
 		pwd : "password!d?45",
 		query : null,
 		//init 
 		initUserSchema : ()=>{
 			m.defineUModel();
 		},
+		initGridSchema : ()=>{
+			m.defineGModel();
+		},
 		//define
 		defineUModel: ()=>{
 			m.mgU = mg.model("mgUser", schema);	
+		},
+		defineGModel: ()=>{
+			m.mgG = mg.model("mgGrid", gridSchema);	
 		},
 		//utils
 		connect : ()=>{
@@ -66,6 +88,30 @@ const 	express = require("express"),
 		},
 		Hmac : (password)=>{
 			return crypto.createHmac('sha256', m.pwd).update(password).digest('hex');
+		},
+		qLoadGrid : (id_u)=>{
+			if(id_u){
+				//query find grid with id
+				m.query = m.mgG.find({id_user : id_u});
+			}
+		},
+		qFindGrid : (id_u)=>{
+			if(id_u){
+				m.query = m.mgG.find({id_user: id_u});
+			}
+		},
+		qUpdateGrid : (id_u, coor)=>{
+			if(id_u, coor){
+				var query = {id_user : id_u};
+				m.query = m.mgG.update(query, {box: coor});
+			}
+		},
+		qSaveGrid : (id_u, coor)=>{
+			console.log(coor);
+			if(coor){
+				//insert grid 	
+				m.query = new m.mgG({id_user: id_u, box: coor});
+			}
 		}
 	}
 

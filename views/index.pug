@@ -33,11 +33,14 @@ html(ng-app="scalculus", ng-cloak)
 				p status
 		div 
 			h1 Grid System
+			span(ng-show="grid_alert") {{grid_alert}}
 			div#sCalculus
 		div 
 			h1 Functions
 			h2 Basic Functions
 			div#functions
+				button(ng-click="gridLoad()") Load
+				button(ng-click="gridSave()") Save
 				button Select_mode
 				button Add
 				button Substract

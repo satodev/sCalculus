@@ -5,31 +5,6 @@ const	express = require('express'),
 routes.get('/', (req, res)=>{
 	res.render('index');
 });
-//routes.get('/users', (req,res)=>{
-//	m.connect();
-//	m.mgU.find((err, users)=>{
-//		if(err)	{
-//			console.log(err);
-//		}
-//		if(users){
-//			res.send(users);
-//		}
-//		mg.disconnect();
-//	});
-//});
-//routes.get('/users/:id', (req, res)=>{
-//	m.connect();
-//	m.mgU.findById(req.params.id, (err, user)=>{
-//		if(err){
-//			console.log(err);
-//			res.send('no users at that id');
-//		}
-//		if(user){
-//			res.send(user);
-//		}
-//		mg.disconnect();
-//	});
-//});
 routes.post('/sub', (req,res)=>{
 	data = {
 		method : req.body.method,
@@ -39,17 +14,17 @@ routes.post('/sub', (req,res)=>{
 	if(data.method == 'seekUser'){
 		m.initUserSchema();
 		m.qfindUser(data.pseudo)
-		m.connect()
-		m.query.exec((err,user)=>{
-			if(err) console.log(err);
-			if(user.length > 0){
-				res.send('user');
-				m.disconnect();
-			}else{
-				res.send('nuser');
-				m.disconnect();
-			}
-		});
+			m.connect()
+			m.query.exec((err,user)=>{
+				if(err) console.log(err);
+				if(user.length > 0){
+					res.send('user');
+					m.disconnect();
+				}else{
+					res.send('nuser');
+					m.disconnect();
+				}
+			});
 	}
 	if(data.method == 'insertUser'){
 		m.connect();
@@ -60,7 +35,7 @@ routes.post('/sub', (req,res)=>{
 			console.log(data);
 			res.send('cuser');
 			m.disconnect();
-			
+
 		});
 	}
 	if(data.method == 'Null'){
@@ -80,5 +55,44 @@ routes.post('/login', (req,res)=>{
 		res.send(user);
 		m.disconnect();
 	});
+});
+routes.post('/grid', (req, res)=>{
+	if(req.body.method == 'load'){
+		console.log('load');
+		m.initGridSchema();
+		m.qFindGrid(req.body.id_user);
+		m.connect();
+		m.query.exec((err, grid)=>{
+			if(err) console.log(err);
+			if(grid.length > 0){
+				res.send(grid);
+				m.disconnect();
+			}
+		});
+	}
+	if(req.body.method == 'save'){
+		m.initGridSchema();
+		m.qFindGrid(req.body.id_user);
+		m.connect();
+		m.query.exec((err, grid)=>{
+			if(err) console.log(err);
+			console.log(grid);
+			if(grid.length == 0){
+				m.qSaveGrid(req.body.id_user, req.body.content);
+				m.query.save((err, grid)=>{
+					if(err) console.log(err);
+					res.send(grid);
+					m.disconnect();
+				});
+			}else{
+				m.qUpdateGrid(req.body.id_user, req.body.content);
+				m.query.exec((err, grid)=>{
+					if(err) console.log(err);
+					res.send(grid);
+					m.disconnect();
+				});
+			}
+		});
+	}
 });
 module.exports = routes;

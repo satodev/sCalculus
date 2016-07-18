@@ -4,14 +4,25 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 	if(username){
 		$scope.user_log = username;
 		$scope.user_id = cookieManager.r(1);
-		gridManager.gen();
+		gridManager.del();
 		gridManager.create();
+		$scope.grid_alert = 'loading';
+		gridManager.gen($scope.user_id).then((grids)=>{
+			if(grids){
+				gridManager.build(grids);
+				let current_grid = grids.data[0].box;
+				for(let i in current_grid){
+					console.log(current_grid[i], i);						
+				}
+			}
+		}).finally(()=>{
+			$scope.grid_alert = 'ok';	
+		});
 	}else{
 		$scope.user_log = '';
 		$scope.user_id = '';
 	}
 	$scope.disconnect = function(){
-		console.log('pass');
 		for(var i = 0; i < cookieManager.array.length; i++){
 			cookieManager.d(i);
 		}
@@ -70,12 +81,48 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				cookieManager.w(3, res.data.date);
 				$scope.user_log = res.data.name;	
 				$scope.user_id = res.data._id;
-				gridManager.gen();
+				gridManager.del();
+				gridManager.create();
+				gridManager.gen($scope.user_id).then((grids)=>{
+					if(grids){
+						gridManager.build(grids);
+						let current_grid = grids.data[0].box;
+						for(let i in current_grid){
+							console.log(current_grid[i], i);						
+						}
+					}
+				}).finally(()=>{
+					$scope.grid_alert = 'ok';	
+				});
 			}else{
 				$scope.loginStatus = 'Fail to Authenticate';
 			}
 		}).finally(()=>{
 			$scope.Login_loading = false;	
+		});
+	}
+	$scope.gridSave = function(){
+		gridManager.getContent();
+		if($scope.user_id){
+			gridManager.save($scope.user_id).then((data)=>{
+				console.log(data);	
+			});
+		}else{
+			console.log('not able to save that grid');
+		}
+	}
+	$scope.gridLoad = function(){
+		gridManager.del();
+		gridManager.gen($scope.user_id).then((grids)=>{
+			if(grids){
+				gridManager.build(grids);
+				let current_grid = grids.data[0].box;
+				for(let i in current_grid){
+					console.log(current_grid[i], i);						
+				}
+			}
+		}).finally(()=>{
+			$scope.grid_alert = 'ok';	
 		});
 	}
 }]);
