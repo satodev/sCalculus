@@ -10,10 +10,6 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		gridManager.gen($scope.user_id).then((grids)=>{
 			if(grids){
 				gridManager.build(grids);
-				let current_grid = grids.data[0].box;
-				for(let i in current_grid){
-					console.log(current_grid[i], i);						
-				}
 			}
 		}).finally(()=>{
 			$scope.grid_alert = 'ok';	
@@ -104,15 +100,20 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 	$scope.gridSave = function(){
 		gridManager.getContent();
 		if($scope.user_id){
+			$scope.grid_alert = 'Saving';
 			gridManager.save($scope.user_id).then((data)=>{
-				console.log(data);	
+				if(data.length > 0 && data.status == 200){
+					$scope.grid_alert='Saved';
+				}else{
+					$scope.grid_alert="Problem while saving, try again";
+				}
 			});
 		}else{
 			console.log('not able to save that grid');
 		}
 	}
 	$scope.gridLoad = function(){
-		gridManager.del();
+		$scope.grid_alert = 'loading';
 		gridManager.gen($scope.user_id).then((grids)=>{
 			if(grids){
 				gridManager.build(grids);
@@ -124,5 +125,8 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		}).finally(()=>{
 			$scope.grid_alert = 'ok';	
 		});
+	}
+	$scope.gridSelect = function(){
+		gridManager.select();		
 	}
 }]);
