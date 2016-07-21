@@ -126,7 +126,10 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 			$scope.grid_alert = 'ok';	
 		});
 	}
+	$scope.getCoor = function($event){
+		$scope.coord = $event.toElement.getAttribute('id');
+	}
 	$scope.gridSelect = function(){
-		gridManager.select();		
+//		gridManager.select();		
 	}
 }]);

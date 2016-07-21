@@ -1,7 +1,9 @@
 app.factory('gridManager', ($http)=>{
 	var grid = {
+		cont : document.getElementById('sCalculus'),
 		content: {},
-		boxSelect : {},
+		selectState : false,
+		boxSelect : [],
 		build : (data)=>{
 			if(data){
 				let current_grid = data.data[0].box;
@@ -13,7 +15,7 @@ app.factory('gridManager', ($http)=>{
 		},
 		create : ()=>{
 			grid.shortcuts();
-			let container = document.getElementById('sCalculus');
+			let container = grid.cont;
 			for(var i = 0; i < 10; i++){
 				for(var j = 0; j < 26; j++){
 					if(i == 0 && j == 0){
@@ -32,7 +34,7 @@ app.factory('gridManager', ($http)=>{
 		shortcuts : ()=>{
 			document.onkeyup = (e)=>{
 				let activeElem = document.activeElement;
-				if(activeElem.classList.length == 1 && activeElem.classList[0] == 'box'){
+				if(activeElem.getAttribute('disabled') == null && activeElem.classList[0] == 'box'){
 					current_pos = activeElem.getAttribute('id');
 					let arr = current_pos.split(':');
 					if(e.which == 37 && e.isTrusted && e.ctrlKey && e.altKey){ //ctrl alt left
@@ -65,7 +67,7 @@ app.factory('gridManager', ($http)=>{
 		},
 		defineGridContent: ()=>{
 			grid.content = {};
-			let container = document.getElementById('sCalculus');
+			let container = grid.cont;
 			for(var i = 0; i < container.childNodes.length; i++){
 				if(container.childNodes[i].classList.length == 1 
 						&& container.childNodes[i].classList[0] == 'box' 
@@ -75,28 +77,24 @@ app.factory('gridManager', ($http)=>{
 			}
 		},
 		del : ()=>{
-			let cont = document.getElementById('sCalculus');
+			let cont = grid.cont;
 			cont.innerHTML = '';	
 			console.log('Delete Grid');
 		},
-		singleBoxSelec: (box, time)=>{
-			if(box && time){
-				if(grid.boxSelect[box.getAttribute('id')]){
-					box.classList += "selected";
-					delete grid.boxSelect[box.getAttribute('id')];
-				}else{
+		singleBoxSelect: (box)=>{
+			if(box){
+				if(grid.boxSelect.indexOf(box.getAttribute('id')) != -1){
 					box.classList.remove("selected");
-					grid.boxSelect[box.getAttribute('id')] = time;	
+					grid.boxSelect.splice(grid.boxSelect.indexOf(box.getAttribute('id')),1);
+				}else{
+					box.classList += " selected";
+					grid.boxSelect.push(box.getAttribute('id'));
 				}
 			}
 		},
-		multipleBoxSelect : (boxes, times)=>{
-
-		},
-		select: ()=>{
-			let cont = document.getElementById('sCalculus');
-			let select_state = false;
-			let acc = [];
+		selectStateManage: ()=>{
+			let select_state = grid.selectState;
+			let cont = grid.cont;
 			if(cont.classList.length > 0){
 				select_state = false;
 				cont.classList.remove("select_mode");
@@ -104,47 +102,57 @@ app.factory('gridManager', ($http)=>{
 				select_state = true;
 				cont.classList += "select_mode";
 			}
-			let timestamp = 0;
+			grid.selectState = select_state;
+		},
+		getCoor : ()=>{
+			if(grid.boxSelect.length != 0){
+				return grid.boxSelect;
+			}
+		},
+		cleanSelect: ()=>{
+			let cont = grid.cont.childNodes;
+			for(var i = 0; i < cont.length; i++){
+				if(cont[i].getAttribute('disabled') == null && cont[i].classList.length >=2){
+					cont[i].classList.remove('selected');
+					grid.boxSelect = [];
+				}
+			}
+		},
+		select: ()=>{
+			let cont = grid.cont;
+			let select_state = grid.selectStateManage();
+			if(!select_state){
+				grid.cleanSelect();
+			}
 			cont.onclick = (e)=>{
-				if(timestamp == 0){
-					timestamp = e.timeStamp;
-				}
 				if(select_state){
-					if(e.target.classList.length == 1 && e.target.classList[0] =="box"){
-						console.log('single click');
-						grid.singleBoxSelect(e.target, e.timeStamp);
+					if(e.target.getAttribute('disabled') == null && e.target.classList[0] =="box"){
+						grid.singleBoxSelect(e.target);
 					}
-				}else{
-					e.stopPropagation();
 				}
 			}
-			cont.onkeydown = (ev)=>{
-				cont.onclick = (e)=>{
-					if(timestamp == 0){
-						timestamp = e.timeStamp;
-					}
-					if(select_state){
-						if(ev.which == 18 && e.target.classList.length == 1 && e.target.classList[0] == 'box'){
-							console.log('rangedoubleclick');
+			var ac = document.activeElement;
+			var box = document.getElementsByClassName('box');
+			for(var i = 0 ; i < box.length; i++){
+				if(box[i].getAttribute('disabled') == null){
+					box[i].onkeyup = (e)=>{
+						if(e.ctrlKey && e.which == 32 && e.isTrusted){
+							grid.singleBoxSelect(e.target);
 						}
-//							if(timestamp == e.timeStamp){
-//								firstbox = document.getElementById(e.target.getAttribute('id'));
-//								console.log('f'+firstbox, timestamp);
-//							}
-//							if(timestamp != e.timeStamp){
-//								secondbox = document.getElementById(e.target.getAttribute('id'));	
-//								console.log('s'+secondbox, timestamp);
-//								timestamp = 0;	
-//							}
-					}else{
-						e.stopPropagation();
 					}
 				}
 			}
+		},
+		toggleSelectButton: ()=>{
+			state = grid.selectState;
+			if(state)? grid.selectState = false : grid.selectState = true;
 		}
 	}
 	return {
 		create : ()=>{grid.create();},
+		state : ()=>{
+			return grid.selectStateManage();
+		},
 		getContent :()=>{
 			grid.defineGridContent();
 		},
@@ -160,8 +168,14 @@ app.factory('gridManager', ($http)=>{
 		del: ()=>{
 			grid.del();
 		},
-		select : ()=>{
+		toggleSelectButton : ()=>{
+			grid.toggleSelectButton();
+		},
+		selection : ()=>{
 			grid.select();
+		},
+		getCoor : ()=>{
+			return grid.getCoor();
 		}
 	}
 });

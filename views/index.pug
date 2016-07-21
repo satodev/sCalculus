@@ -34,7 +34,8 @@ html(ng-app="scalculus", ng-cloak)
 		div 
 			h1 Grid System
 			span(ng-show="grid_alert") {{grid_alert}}
-			div#sCalculus
+			input(id="coord" type="text" value="{{coord}}" disabled) 
+			div(ng-click="getCoor($event)")#sCalculus
 		div 
 			h1 Functions
 			h2 Basic Functions
