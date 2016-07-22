@@ -26,3 +26,7 @@
 #sCalculus textarea{
 	resize: none;
 }
+.btn_active{
+	background-color:black;
+	color: white;
+}

@@ -34,15 +34,18 @@ html(ng-app="scalculus", ng-cloak)
 		div 
 			h1 Grid System
 			span(ng-show="grid_alert") {{grid_alert}}
-			input(id="coord" type="text" value="{{coord}}" disabled) 
-			div(ng-click="getCoor($event)")#sCalculus
+			br 
+			span(id="current_coord") {{current_coor}}
+			span(id="coord") {{coord}} 
+			div(ng-keydown="shortcuts($event)")#sCalculus
 		div 
 			h1 Functions
 			h2 Basic Functions
 			div#functions
 				button(ng-click="gridLoad()") Refresh
 				button(ng-click="gridSave()") Save
-				button(ng-click="gridSelect()") Select 
+				button(id="select_btn", ng-click="gridSelect()") Select 
+				button(id="select_paste", ng-show="coord", ng-click="gridSelectPaste()") Paste
 				button Add
 				button Substract
 				button Multiply

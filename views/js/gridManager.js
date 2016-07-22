@@ -2,8 +2,9 @@ app.factory('gridManager', ($http)=>{
 	var grid = {
 		cont : document.getElementById('sCalculus'),
 		content: {},
-		selectState : false,
+		select_state : false,
 		boxSelect : [],
+		activeElem : null,
 		build : (data)=>{
 			if(data){
 				let current_grid = data.data[0].box;
@@ -14,7 +15,6 @@ app.factory('gridManager', ($http)=>{
 			}
 		},
 		create : ()=>{
-			grid.shortcuts();
 			let container = grid.cont;
 			for(var i = 0; i < 10; i++){
 				for(var j = 0; j < 26; j++){
@@ -31,39 +31,61 @@ app.factory('gridManager', ($http)=>{
 				container.innerHTML += '<br />';
 			}
 		},
-		shortcuts : ()=>{
-			document.onkeyup = (e)=>{
-				let activeElem = document.activeElement;
-				if(activeElem.getAttribute('disabled') == null && activeElem.classList[0] == 'box'){
-					current_pos = activeElem.getAttribute('id');
-					let arr = current_pos.split(':');
-					if(e.which == 37 && e.isTrusted && e.ctrlKey && e.altKey){ //ctrl alt left
-						if(arr[0] > 1 && arr[0] <= 25){
-							arr[0]--;
-						}
-					}
-					if(e.which == 38 && e.isTrusted && e.ctrlKey && e.altKey){ //ctrl alt top
-						if(arr[1] > 1 && arr[1] <= 9){
-							arr[1]--;
-						}
-					}
-					if(e.which == 39 && e.isTrusted && e.ctrlKey && e.altKey){ //ctrl alt right
-						if(arr[0] >=1 && arr[0] < 25){
-							arr[0]++
-						}
-					}
-					if(e.which == 40 && e.isTrusted && e.ctrlKey && e.altKey){ //ctrl alt bottom
-						if(arr[1] >= 1 && arr[1] < 25){
-							arr[1]++;
-						}
-					}
-					var newElem = document.getElementById(arr[0]+':'+arr[1]);
-					newElem.focus();
-				}
-				if(e.which == 83 && e.isTrusted && e.altKey){
-					grid.select();
+		setActiveElem : ()=>{
+			if(document.activeElement.getAttribute('disabled') == null && document.activeElement.classList[0] == 'box'){
+				grid.activeElem = document.activeElement;	
+			}else{
+				var oneone = document.getElementById('1:1');
+				oneone.focus();
+			}
+		},
+		mleft : ()=>{
+			grid.setActiveElem();
+			if(grid.activeElem != 0){
+				let current_pos = grid.activeElem.getAttribute('id');
+				let arr = current_pos.split(':');
+				if(arr[0] > 1 && arr[0] <= 25){
+					arr[0] --;
+					grid.mfocus(arr[0], arr[1]);		
 				}
 			}
+		},
+		mup : ()=>{
+			grid.setActiveElem();
+			if(grid.activeElem != 0){
+				let current_pos = grid.activeElem.getAttribute('id');
+				let arr = current_pos.split(':');
+				if(arr[1] > 1 && arr[1] <= 9){
+					arr[1]--;
+					grid.mfocus(arr[0], arr[1]);
+				}
+			}
+		},
+		mright: ()=>{
+			grid.setActiveElem();
+			if(grid.activeElem != 0){
+				let current_pos = grid.activeElem.getAttribute('id');
+				let arr = current_pos.split(':');
+				if(arr[0] >=1 && arr[0] < 25){
+					arr[0]++
+					grid.mfocus(arr[0], arr[1]);
+				}
+			}
+		},
+		mdown : ()=>{
+			grid.setActiveElem();
+			if(grid.activeElem != 0){
+				let current_pos = grid.activeElem.getAttribute('id');
+				let arr = current_pos.split(':');
+				if(arr[1] >= 1 && arr[1] < 9){
+					arr[1]++;
+					grid.mfocus(arr[0], arr[1]);
+				}
+			}
+		},
+		mfocus : (posx, posy)=>{
+			let newElem = document.getElementById(posx+':'+posy);
+			newElem.focus();
 		},
 		defineGridContent: ()=>{
 			grid.content = {};
@@ -81,101 +103,34 @@ app.factory('gridManager', ($http)=>{
 			cont.innerHTML = '';	
 			console.log('Delete Grid');
 		},
-		singleBoxSelect: (box)=>{
-			if(box){
-				if(grid.boxSelect.indexOf(box.getAttribute('id')) != -1){
+		singleBoxSelect: ()=>{
+			if(grid.select_state){
+				let box = document.activeElement;
+				if(box.classList.contains('selected')){
 					box.classList.remove("selected");
-					grid.boxSelect.splice(grid.boxSelect.indexOf(box.getAttribute('id')),1);
 				}else{
 					box.classList += " selected";
-					grid.boxSelect.push(box.getAttribute('id'));
 				}
 			}
 		},
-		selectStateManage: ()=>{
-			let select_state = grid.selectState;
-			let cont = grid.cont;
-			if(cont.classList.length > 0){
-				select_state = false;
-				cont.classList.remove("select_mode");
-			}else{
-				select_state = true;
-				cont.classList += "select_mode";
-			}
-			grid.selectState = select_state;
-		},
-		getCoor : ()=>{
-			if(grid.boxSelect.length != 0){
-				return grid.boxSelect;
-			}
-		},
-		cleanSelect: ()=>{
-			let cont = grid.cont.childNodes;
-			for(var i = 0; i < cont.length; i++){
-				if(cont[i].getAttribute('disabled') == null && cont[i].classList.length >=2){
-					cont[i].classList.remove('selected');
-					grid.boxSelect = [];
-				}
-			}
-		},
-		select: ()=>{
-			let cont = grid.cont;
-			let select_state = grid.selectStateManage();
-			if(!select_state){
-				grid.cleanSelect();
-			}
-			cont.onclick = (e)=>{
-				if(select_state){
-					if(e.target.getAttribute('disabled') == null && e.target.classList[0] =="box"){
-						grid.singleBoxSelect(e.target);
-					}
-				}
-			}
-			var ac = document.activeElement;
-			var box = document.getElementsByClassName('box');
-			for(var i = 0 ; i < box.length; i++){
-				if(box[i].getAttribute('disabled') == null){
-					box[i].onkeyup = (e)=>{
-						if(e.ctrlKey && e.which == 32 && e.isTrusted){
-							grid.singleBoxSelect(e.target);
-						}
-					}
-				}
-			}
-		},
-		toggleSelectButton: ()=>{
-			state = grid.selectState;
-			if(state)? grid.selectState = false : grid.selectState = true;
+		toggleSelectState : ()=>{
+			grid.select_state ? grid.select_state = false : grid.select_state = true;
 		}
 	}
 	return {
-		create : ()=>{grid.create();},
-		state : ()=>{
-			return grid.selectStateManage();
-		},
-		getContent :()=>{
-			grid.defineGridContent();
-		},
-		build : (data)=>{
-			grid.build(data);
-		},
-		save : (uid)=>{
-			return $http.post('/grid', {method:'save', id_user : uid, content: grid.content});
-		},
-		gen :(uid)=>{
-			return $http.post('/grid', {method:'load', id_user: uid});
-		}, 
-		del: ()=>{
-			grid.del();
-		},
-		toggleSelectButton : ()=>{
-			grid.toggleSelectButton();
-		},
-		selection : ()=>{
-			grid.select();
-		},
-		getCoor : ()=>{
-			return grid.getCoor();
-		}
+		cont : grid.cont,
+		create : ()=>{ grid.create(); },
+		state : ()=>{ return grid.select_state},
+		getContent :()=>{ grid.defineGridContent(); },
+		build : (data)=>{ grid.build(data); },
+		save : (uid)=>{ return $http.post('/grid', {method:'save', id_user : uid, content: grid.content}); },
+		gen :(uid)=>{ return $http.post('/grid', {method:'load', id_user: uid}); }, 
+		del: ()=>{ grid.del(); },
+		toggleSelectState : ()=>{ grid.toggleSelectState(); },
+		selectSingleBox : ()=>{ grid.singleBoxSelect();},
+		mleft : ()=>{ grid.mleft(); },
+		mup : ()=>{ grid.mup(); },
+		mright : ()=>{ grid.mright(); },
+		mdown : ()=>{ grid.mdown(); }
 	}
 });

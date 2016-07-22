@@ -32,7 +32,6 @@ routes.post('/sub', (req,res)=>{
 		m.qinsertUser(data.pseudo, data.pwd);
 		m.query.save((err,data)=>{
 			if(err) console.log(err);
-			console.log(data);
 			res.send('cuser');
 			m.disconnect();
 
@@ -58,7 +57,6 @@ routes.post('/login', (req,res)=>{
 });
 routes.post('/grid', (req, res)=>{
 	if(req.body.method == 'load'){
-		console.log('load');
 		m.initGridSchema();
 		m.qFindGrid(req.body.id_user);
 		m.connect();

@@ -14,14 +14,7 @@ const 	express = require("express"),
 	});
 	var db = mg.connection;
 	db.on('error', (err)=>{
-		console.log('Mongoose connection error : '+ err);
 		mg.disconnect();
-	});
-	db.once('open', ()=>{
-		console.log('Mg opened');
-	});
-	db.once('close', ()=>{
-		console.log('Mg closed');
 	});
 	//defineExport obj
 	m = {
@@ -59,12 +52,10 @@ const 	express = require("express"),
 				m.mgU.find({name: user}, (err, userFound)=>{
 					if(err) console.log(err);
 					if(userFound.length > 0){
-						console.log("user does already exists, check another one");	
 						m.disconnect();
 					}else{
 						m.mgU.create({name:user, password:m.Hmac(mdp)}, (err,user)=>{
 							if(err) console.log(err);
-							console.log('user created');
 							m.disconnect();
 						});
 					}
@@ -107,7 +98,6 @@ const 	express = require("express"),
 			}
 		},
 		qSaveGrid : (id_u, coor)=>{
-			console.log(coor);
 			if(coor){
 				//insert grid 	
 				m.query = new m.mgG({id_user: id_u, box: coor});
