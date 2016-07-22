@@ -1,22 +1,26 @@
 var app = angular.module('scalculus', []);
 app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManager', 'gridManager',($scope, $http, login, subscribe, cookieManager, gridManager)=>{
-	var username = cookieManager.r(0);
 	$scope.select_state = false;
-	if(username){
-		$scope.user_log = username;
-		$scope.user_id = cookieManager.r(1);
-		gridManager.create();
-		$scope.grid_alert = 'loading';
-		gridManager.gen($scope.user_id).then((grids)=>{
-			if(grids){
-				gridManager.build(grids);
+	gridManager.create();
+	document.onreadystatechange = function(){
+		if(document.readyState == "complete"){
+			var username = cookieManager.r(0);
+			if(username){
+				$scope.user_log = username;
+				$scope.user_id = cookieManager.r(1);
+				$scope.grid_alert = 'loading';
+				gridManager.gen($scope.user_id).then((grids)=>{
+					if(grids){
+						gridManager.build(grids);
+					}
+				}).finally(()=>{
+					$scope.grid_alert = 'ok';	
+				});
+			}else{
+				$scope.user_log = '';
+				$scope.user_id = '';
 			}
-		}).finally(()=>{
-			$scope.grid_alert = 'ok';	
-		});
-	}else{
-		$scope.user_log = '';
-		$scope.user_id = '';
+		}
 	}
 	//scope functions
 	$scope.disconnect = function(){
@@ -85,9 +89,9 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 						gridManager.build(grids);
 						let current_grid = grids.data[0].box;
 						//for futur theoretical multi tabs sheets
-					//	for(let i in current_grid){
-					//		console.log(current_grid[i], i);						
-					//	}
+						//	for(let i in current_grid){
+						//		console.log(current_grid[i], i);						
+						//	}
 					}
 				}).finally(()=>{
 					$scope.grid_alert = 'ok';	
@@ -121,8 +125,8 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				gridManager.build(grids);
 				let current_grid = grids.data[0].box;
 				//for(let i in current_grid){
-			//		console.log(current_grid[i], i);						
-			//	}
+				//		console.log(current_grid[i], i);						
+				//	}
 			}
 		}).finally(()=>{
 			$scope.grid_alert = 'ok';	
@@ -132,28 +136,28 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		$scope.coord = $event.toElement.getAttribute('id');
 	}
 	$scope.gridSelect = function(){
-			gridManager.toggleSelectState();
-			$scope.select_state = gridManager.state();
-			let select_btn = document.getElementById('select_btn');
-			let box = document.getElementsByClassName('box');
-			let array = [];
-			if($scope.select_state){
-				gridManager.cont.onclick = (e)=>{
-					if(e.target.getAttribute('disabled') == null && e.target.classList.contains('box')){
-						gridManager.selectSingleBox();
-					}
+		gridManager.toggleSelectState();
+		$scope.select_state = gridManager.state();
+		let select_btn = document.getElementById('select_btn');
+		let box = document.getElementsByClassName('box');
+		let array = [];
+		if($scope.select_state){
+			gridManager.cont.onclick = (e)=>{
+				if(e.target.getAttribute('disabled') == null && e.target.classList.contains('box')){
+					gridManager.selectSingleBox();
 				}
-				select_btn.classList += " btn_active";
-			}else{
-				for(var i = 0; i < box.length; i++){
-					if(box[i].getAttribute('disabled') == null && box[i].classList.contains('selected')){
-						array.push(box[i].getAttribute('id'));
-						box[i].classList.remove('selected');
-					}
-				}
-				$scope.coord = array;
-				select_btn.classList.remove("btn_active");
 			}
+			select_btn.classList += " btn_active";
+		}else{
+			for(var i = 0; i < box.length; i++){
+				if(box[i].getAttribute('disabled') == null && box[i].classList.contains('selected')){
+					array.push(box[i].getAttribute('id'));
+					box[i].classList.remove('selected');
+				}
+			}
+			$scope.coord = array;
+			select_btn.classList.remove("btn_active");
+		}
 	}
 	$scope.gridSelectPaste = function(last){
 		let current_box = document.activeElement;
