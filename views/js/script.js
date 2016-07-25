@@ -12,9 +12,10 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				gridManager.gen($scope.user_id).then((grids)=>{
 					if(grids){
 						gridManager.build(grids);
+						$scope.grid_alert = "ok";
+					}else{
+						$scope.grid_alert = "problem while loading";
 					}
-				}).finally(()=>{
-					$scope.grid_alert = 'ok';	
 				});
 			}else{
 				$scope.user_log = '';
@@ -132,8 +133,35 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 			$scope.grid_alert = 'ok';	
 		});
 	}
-	$scope.getCoor = function($event){
-		$scope.coord = $event.toElement.getAttribute('id');
+	$scope.gridClicked = function($event){
+		//current_coor
+		let ae = document.activeElement;
+		let fnc = document.getElementById('fnc');
+		if(ae.getAttribute('disabled') == null && ae.classList.contains('box')){
+			$scope.current_coor = ae.getAttribute('id');
+			$scope.current_coor_value = $event.target.value;
+			fnc.value = $scope.current_coor_value;
+		}
+	}
+	$scope.gridKeyUp = function($event){
+		$scope.shortcuts($event);
+		if(document.activeElement.getAttribute('disabled') && document.activeElement.classList.contains('box')){
+			console.log('pass ', document.activeElement);
+			$scope.current_coor = document.activeElement;
+		}
+		if($scope.current_coor){
+			let fnc = document.getElementById('fnc');
+			$scope.current_coor_value = $event.target.value;
+			fnc.value = $scope.current_coor_value;
+		}
+	}
+	$scope.gridGetBoxValue = function(){
+		if($scope.current_coor){
+			let box = document.getElementById($scope.current_coor);
+			box.onkeyup = function(e){
+				$scope.current_coor_value = box.value;	
+			}
+		}
 	}
 	$scope.gridSelect = function(){
 		gridManager.toggleSelectState();
@@ -159,16 +187,30 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 			select_btn.classList.remove("btn_active");
 		}
 	}
-	$scope.gridSelectPaste = function(last){
-		let current_box = document.activeElement;
+	$scope.gridSelectPaste = function(){
+		let current_box = document.getElementById($scope.current_coor);
 		let coords = $scope.coord;
-		if(last){
-			current_box = last
-				console.log(current_box);
-		}
 		if(current_box.getAttribute('disabled') == null && current_box.classList.contains('box')){
 			current_box.innerHTML += coords;
 		}
+	}
+	$scope.fncGetContent = function(){
+		if($scope.current_coor){
+			let fnc = document.getElementById('fnc');
+			let box_value = document.getElementById($scope.current_coor).value;
+			fnc.value = box_value;
+			$scope.current_coor_value = box_value;
+		}
+	}
+	$scope.fncSetContent = function($event){
+			let box = document.getElementById($scope.current_coor);
+			$scope.current_coor_value = $event.target.value;
+			box.value = $scope.current_coor_value;
+			box.innerHTML = $scope.current_coor_value;
+
+			if($event.which == 70 && $event.isTrusted && $event.ctrlKey && $event.altKey){
+				box.focus();
+			}
 	}
 	$scope.shortcuts = function($event){
 		if($event.which == 83 && $event.isTrusted && $event.altKey){
@@ -191,6 +233,18 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		}
 		if($event.which == 86 && $event.isTrusted && $event.ctrlKey && $event.altKey){
 			$scope.gridSelectPaste();	
+		}
+		if($event.which ==  70 && $event.isTrusted && $event.ctrlKey && $event.altKey){
+			let fnc = document.getElementById('fnc');
+			if(document.activeElement != fnc && $scope.current_coor){
+				fnc.focus();
+			}
+		}
+		if($event.which == 83 && $event.isTrusted && $event.ctrlKey && $event.shiftKey){
+			$scope.gridSave();			
+		}
+		if($event.which == 82 && $event.isTrusted && $event.ctrlKey && $event.altKey){
+			$scope.gridLoad();
 		}
 	}
 }]);

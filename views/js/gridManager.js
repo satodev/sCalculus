@@ -11,6 +11,7 @@ app.factory('gridManager', ($http)=>{
 				for(let i in current_grid){
 					let box = document.getElementById(i);
 					box.innerHTML = current_grid[i];
+					box.value = current_grid[i];
 				}
 			}
 		},

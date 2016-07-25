@@ -30,16 +30,17 @@ html(ng-app="scalculus", ng-cloak)
 		div
 			h1 Status Bar 
 			div#status
-				p status
+				span(ng-show="grid_alert") {{grid_alert}}
+				br 
+				span(ng-show="current_coor") x:y = {{current_coor}}   ;
+				span(ng-show="coord") selected coord : {{coord}}
 		div 
 			h1 Grid System
-			span(ng-show="grid_alert") {{grid_alert}}
-			br 
-			span(id="current_coord") {{current_coor}}
-			span(id="coord") {{coord}} 
-			div(ng-keydown="shortcuts($event)")#sCalculus
+			div(ng-keyup="gridKeyUp($event)", ng-click="gridClicked($event)")#sCalculus
 		div 
 			h1 Functions
+			span(ng-show="current_coor") {{current_coor}} = 
+			input(ng-show="current_coor", id="fnc", type="text", ng-click="fncGetContent()", ng-keyup="fncSetContent($event)")
 			h2 Basic Functions
 			div#functions
 				button(ng-click="gridLoad()") Refresh
@@ -50,9 +51,6 @@ html(ng-app="scalculus", ng-cloak)
 				button Substract
 				button Multiply
 				button Divide
-			h2 Custom Functions 
-			div#custom_function
-				button log
 
 		script(src="/node_modules/angular/angular.min.js")
 		script(src="/views/js/script.js")

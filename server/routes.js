@@ -62,8 +62,11 @@ routes.post('/grid', (req, res)=>{
 		m.connect();
 		m.query.exec((err, grid)=>{
 			if(err) console.log(err);
-			if(grid.length > 0){
+			if(grid && grid.length > 0){ // frequent problem here (when multi request is on going)
 				res.send(grid);
+				m.disconnect();
+			}else{
+				res.send('error reload');
 				m.disconnect();
 			}
 		});
@@ -74,7 +77,6 @@ routes.post('/grid', (req, res)=>{
 		m.connect();
 		m.query.exec((err, grid)=>{
 			if(err) console.log(err);
-			console.log(grid);
 			if(grid.length == 0){
 				m.qSaveGrid(req.body.id_user, req.body.content);
 				m.query.save((err, grid)=>{
