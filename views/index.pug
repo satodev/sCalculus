@@ -1,9 +1,9 @@
 doctype html
-html(ng-app="scalculus", ng-cloak)
+html(ng-app="scalculus")
 	head 
 		title sCalculus
 		link(rel="stylesheet", type="text/css", href="/views/css/style.css")
-	body(ng-controller="sCalCtrl")
+	body(ng-cloak, ng-controller="sCalCtrl")
 		div
 			h1 Auth Module
 			h2 Subscribe
@@ -36,7 +36,7 @@ html(ng-app="scalculus", ng-cloak)
 				span(ng-show="coord") selected coord : {{coord}}
 		div 
 			h1 Grid System
-			div(ng-keyup="gridKeyUp($event)", ng-click="gridClicked($event)")#sCalculus
+			div(ng-keydown="gridKeyDown($event)", ng-keyup="gridKeyUp($event)", ng-click="gridClicked($event)")#sCalculus
 		div 
 			h1 Functions
 			span(ng-show="current_coor") {{current_coor}} = 

@@ -1,6 +1,9 @@
 * {
   background-color: #fff;
 }
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  	display: none !important;
+}
 .selected{
 	border-top: 1px solid #009d4e;
 }

@@ -10,6 +10,8 @@ app.factory('gridManager', ($http)=>{
 				let current_grid = data.data[0].box;
 				for(let i in current_grid){
 					let box = document.getElementById(i);
+					var result = grid.calculus(current_grid[i]);
+					box.setAttribute('data-func', result);
 					box.innerHTML = current_grid[i];
 					box.value = current_grid[i];
 				}
@@ -100,9 +102,13 @@ app.factory('gridManager', ($http)=>{
 			}
 		},
 		del : ()=>{
-			let cont = grid.cont;
-			cont.innerHTML = '';	
-			console.log('Delete Grid');
+			let boxes = grid.cont.getElementsByClassName('box');
+			for(var i = 0 ; i < boxes.length; i++){
+				if(boxes[i].getAttribute('disabled') == null && boxes[i].value.length > 0){
+					boxes[i].innerHTML = '';
+					boxes[i].value = '';
+				}
+			}
 		},
 		singleBoxSelect: ()=>{
 			if(grid.select_state){
@@ -116,6 +122,16 @@ app.factory('gridManager', ($http)=>{
 		},
 		toggleSelectState : ()=>{
 			grid.select_state ? grid.select_state = false : grid.select_state = true;
+		},
+		calculus : (string)=>{
+			let str = string.trim();
+			let op = ["+","-","/","*","^","(",")"];
+			op.map((cur)=>{
+				if(str.indexOf(cur) != -1){
+				console.log(str, cur, str.indexOf(cur));
+				}
+			});
+			return str;
 		}
 	}
 	return {

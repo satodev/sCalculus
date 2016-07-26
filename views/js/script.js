@@ -25,12 +25,15 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 	}
 	//scope functions
 	$scope.disconnect = function(){
-		for(var i = 0; i < cookieManager.array.length; i++){
-			cookieManager.d(i);
+		var conf = confirm('Do you really want to disconnect ?');
+		if(conf){
+			for(var i = 0; i < cookieManager.array.length; i++){
+				cookieManager.d(i);
+			}
+			$scope.user_log = '';
+			$scope.user_id = '';
+			gridManager.del();
 		}
-		$scope.user_log = '';
-		$scope.user_id = '';
-		gridManager.del();
 	}
 	$scope.passwordConfirm = function(){
 		if($scope.userPwd && $scope.userPwd.length > 3){
@@ -84,7 +87,6 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				$scope.user_log = res.data.name;	
 				$scope.user_id = res.data._id;
 				gridManager.del();
-				gridManager.create();
 				gridManager.gen($scope.user_id).then((grids)=>{
 					if(grids){
 						gridManager.build(grids);
@@ -121,6 +123,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 	}
 	$scope.gridLoad = function(){
 		$scope.grid_alert = 'loading';
+		gridManager.del();
 		gridManager.gen($scope.user_id).then((grids)=>{
 			if(grids){
 				gridManager.build(grids);
@@ -141,26 +144,21 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 			$scope.current_coor = ae.getAttribute('id');
 			$scope.current_coor_value = $event.target.value;
 			fnc.value = $scope.current_coor_value;
+			$scope.showBoxState($event.target);
 		}
 	}
 	$scope.gridKeyUp = function($event){
 		$scope.shortcuts($event);
-		if(document.activeElement.getAttribute('disabled') && document.activeElement.classList.contains('box')){
-			console.log('pass ', document.activeElement);
-			$scope.current_coor = document.activeElement;
+		$scope.showBoxState($event.target);
+		let elem = $event.target;
+		if(elem.getAttribute('disabled') == null && elem.classList.contains('box')){
+			$scope.current_coor = elem.getAttribute('id');
 		}
 		if($scope.current_coor){
 			let fnc = document.getElementById('fnc');
 			$scope.current_coor_value = $event.target.value;
 			fnc.value = $scope.current_coor_value;
-		}
-	}
-	$scope.gridGetBoxValue = function(){
-		if($scope.current_coor){
-			let box = document.getElementById($scope.current_coor);
-			box.onkeyup = function(e){
-				$scope.current_coor_value = box.value;	
-			}
+
 		}
 	}
 	$scope.gridSelect = function(){
@@ -203,14 +201,27 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		}
 	}
 	$scope.fncSetContent = function($event){
-			let box = document.getElementById($scope.current_coor);
-			$scope.current_coor_value = $event.target.value;
-			box.value = $scope.current_coor_value;
-			box.innerHTML = $scope.current_coor_value;
+		let box = document.getElementById($scope.current_coor);
+		$scope.current_coor_value = $event.target.value;
+		box.value = $scope.current_coor_value;
+		box.innerHTML = $scope.current_coor_value;
 
-			if($event.which == 70 && $event.isTrusted && $event.ctrlKey && $event.altKey){
-				box.focus();
-			}
+		if($event.which == 70 && $event.isTrusted && $event.ctrlKey && $event.altKey){
+			box.focus();
+		}
+	}
+	$scope.showBoxState = function(tgt){
+		tgt.onfocus = function(f){
+			$scope.showBoxFormula(f);
+		}
+		tgt.onblur = function(b){
+			$scope.showBoxResult(b);
+		}
+	}
+	$scope.showBoxFormula = function(focus){
+			
+	}
+	$scope.showBoxResult = function(blur){
 	}
 	$scope.shortcuts = function($event){
 		if($event.which == 83 && $event.isTrusted && $event.altKey){
