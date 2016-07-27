@@ -124,126 +124,64 @@ app.factory('gridManager', ($http)=>{
 			grid.select_state ? grid.select_state = false : grid.select_state = true;
 		},
 		calculus : (string)=>{
-			let op = ["+","-","/","*","^","(",")"];
 			let str = string.trim();
-			let stra = grid.str2array(str);
-			let strviable = grid.isViable(stra);
-			let res = null;
-			if(strviable){
-				let strop = grid.getOperators(stra, op);
-				let keys = Object.keys(strop);
-				if(keys.length > 1){
-					let priority = grid.getPriority(strop);
-					switch(priority){
-						case 1 :
-							//parentheses
-							//get parenthese content ( ... )
-							// if parenthese in parenthese get inner parenthese content
-							break;
-						case 2 : 
-							//expo
-							//solve and recursive
-							grid.splitSortSolve(str, strop, keys, priority)
-							break;
-						case 3 : 
-							//multi
-							break;
-						case 4 : 
-							//addi sous
-							break;
-					}
-					console.log(priority);
-				}
-				if(keys.length <= 1){
-					res = grid.splitAndSolve(str, strop[keys]);
-				}
-				console.log(str, strop, res);
-			}
-		},
-		splitSortSolve: (str, strop, keys, prio)=>{
-			if(str && strop && keys && prio){
-				console.log(str, strop, keys, prio);
-				if(prio == 2){
-					//get index of exp
-					let indexp = strop.indexOf('^');
-					let calc = null;
-					console.log(indexp, keys);
-					strop.map((cu, cin, car)=>{ 
-						if(cin == indexp){
-						// sStop		
-						}
-						console.log(cin, car[cin]);
-					});
-				}
-				//split and sort then solve
-				strop.map((opcu, opin, opar)=>{
-					console.log(opcu, opin, opar);
-					var prev = keys[keys.indexOf(opin.toString()) -1];
-					var current  = keys[keys.indexOf(opin.toString())];
-					var next = keys[keys.indexOf(opin.toString()) +1];
-				});
-			}
-		},
-		splitAndSolve : (pattern, operator)=>{
-			if(pattern && operator){
-				var arr = pattern.split(operator);
-				var a1 = parseFloat(arr[0]);
-				var a2 = parseFloat(arr[1]);
-				var result = null;
-				switch(operator){
-					case '/' : result = a1 / a2; break;
-					case '*' : result = a1 * a2; break;
-					case '+' : result = a1 + a2; break;
-					case '-' : result = a1 - a2; break;
-					case '^' : result = Math.pow(a1, a2); break;
-				}
-				return result;
-			}
-		},
-		str2array : (str)=>{
 			let stra = [];
+			let strop = [];
+			let strviable = false;
+			let op = ["+","-","/","*","^","(",")"];
+			let res = null;
+			//generate str to array
 			for(var i = 0; i < str.length; i++){
 				stra.push(str[i]);
 			}
-			return stra;
-		},
-		isViable : (stra)=>{
-			return stra.some((scu, sin, sarr)=>{
-				if(parseFloat(scu) || parseInt(scu)){
-					return true;
-				}else{
-					return false;
-				}
-			});
-		},
-		getOperators : (stra, op)=>{
-			let strop = [];
+			//verify array str
 			stra.some((stcu, stin, star)=>{
-				op.map((op, oi, oar)=>{
-					if(stcu == op){
-						strop[stin] = op;
+				//has at least an int || float in it
+				if(parseInt(stcu) || parseFloat(stcu)){
+					strviable = true;
+				}else{
+					op.map((op, oi, oar)=>{
+						if(stcu == op){
+							strop[stin] = op;
+						}
+					});
+				}
+			});
+			if(strviable){
+				var keys = Object.keys(strop);
+				strop.map((sopcu, sopin, sopar)=>{
+					console.log(sopcu, sopin, sopar);
+					var prev = keys[keys.indexOf(sopin.toString()) -1];
+					var current  = keys[keys.indexOf(sopin.toString())];
+					var next = keys[keys.indexOf(sopin.toString()) +1];
+					var pattern = null;
+					if(!prev && next){
+						pattern = str.substr(0, next);		
 					}
+					if(prev && next){
+						pattern = str.substring(current-prev, next);
+					}
+					if(prev && !next){
+						pattern = str.substr(prev+1, str.length);
+					}
+					console.log(keys, keys.indexOf(sopin.toString()), prev, next , pattern);
 				});
-			});
-			return strop;
-		},
-		getPriority : (strop)=>{
-			let priority = [];
-			strop.map((kcu, kin, karr)=>{
-				if(kcu == '(' || kcu == ')'){
-					priority.push(1);
+				console.log(str, strop);
+			}
+			let splitAndSolve = (pattern, operator)=>{
+				if(pattern){
+					var arr = pattern.split(operator);
+					var a1 = parseFloat(arr[0]);
+					var a2 = parseFloat(arr[1]);
+					var result = null;
+					switch(operator){
+						case '/' : result = a1 / a2; break;
+						case '*' : result = a1 * a2; break;
+						case '+' : result = a1 + a2; break;
+						case '-' : result = a1 - a2; break;
+					}
 				}
-				if(kcu == '^'){
-					priority.push(2);
-				}
-				if(kcu == '*' || kcu == '/'){
-					priority.push(3);
-				}
-				if(kcu == '+' || kcu == '-'){
-					priority.push(4);
-				}
-			});
-			return priority.sort()[0];
+			}
 		}
 	}
 	return {
