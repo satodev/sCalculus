@@ -131,7 +131,11 @@ app.factory('gridManager', ($http)=>{
 			let res = null;
 			if(strviable){
 				let strop = grid.getOperators(stra, op);
+				if(str.indexOf('__') != -1){
+					str = str.replace('__', 'e+');
+				}
 				let keys = Object.keys(strop);
+				console.log(str, strop, keys);
 				if(keys.length > 1){
 					let priority = grid.getPriority(strop);
 					switch(priority){
@@ -143,52 +147,112 @@ app.factory('gridManager', ($http)=>{
 						case 2 : 
 							//expo
 							//solve and recursive
-							grid.splitSortSolve(str, strop, keys, priority)
+							grid.splitSortSolve(str, strop, keys, priority);
 							break;
 						case 3 : 
 							//multi
+							grid.splitSortSolve(str,strop, keys, priority);
 							break;
 						case 4 : 
 							//addi sous
+							grid.splitSortSolve(str,strop, keys, priority);
 							break;
 					}
-					console.log(priority);
 				}
 				if(keys.length <= 1){
 					res = grid.splitAndSolve(str, strop[keys]);
+					console.log(res);
 				}
 				console.log(str, strop, res);
 			}
 		},
 		splitSortSolve: (str, strop, keys, prio)=>{
 			if(str && strop && keys && prio){
-				console.log(str, strop, keys, prio);
-				if(prio == 2){
-					//get index of exp
-					let indexp = strop.indexOf('^');
-					let calc = null;
-					console.log(indexp, keys);
-					strop.map((cu, cin, car)=>{ 
-						if(cin == indexp){
-						// sStop		
-						}
-						console.log(cin, car[cin]);
-					});
-				}
-				//split and sort then solve
-				strop.map((opcu, opin, opar)=>{
-					console.log(opcu, opin, opar);
-					var prev = keys[keys.indexOf(opin.toString()) -1];
-					var current  = keys[keys.indexOf(opin.toString())];
-					var next = keys[keys.indexOf(opin.toString()) +1];
+				let indexp = strop.indexOf('^');
+				let indmult= strop.indexOf('*');
+				let inddev = strop.indexOf('/');
+				let indadd = strop.indexOf('+');
+				let indsous = strop.indexOf('-');
+				let calc = null;
+				strop.map((cu, cin, car)=>{ 
+					let prek = keys[keys.indexOf(cin.toString()) -1];
+					let cuk = keys[keys.indexOf(cin.toString())];
+					let nexk = keys[keys.indexOf(cin.toString()) + 1]
+						let min = (prek) ? parseFloat(prek)+1 : 0;
+					let max = (nexk) ? nexk : str.length;
+					let c =  null;
+					console.log(str, strop, keys, prio, prek, cuk, nexk, min, max, indexp, indmult, inddev, indadd, indsous);
+					if(cuk == indexp && prio == 2){
+						c = str.substring(min, max).split(strop[indexp]);
+						c = Math.pow(c[0], c[1]);
+						grid.assemble(c, str, min, max);
+					}
+					if(cuk == indmult && prio == 3){
+						c = str.substring(min,max).split('*');
+						c1 = parseFloat(c[0]);
+						c2 = parseFloat(c[1]);
+						console.log(min, max, c1, c2);
+						c = c1*c2;
+					}
+					if(cuk == inddev && prio == 3){
+						c = str.substring(min,max).split('/');
+						c1 = parseFloat(c[0]);
+						c2 = parseFloat(c[1]);
+						c = c1/c2
+					}
+					if(cuk == indadd && prio == 4 ){
+						getE = 	(keys[cuk-1] == 'e')? true : false;
+						console.log('GETE : '+ getE);
+						c = str.substring(min,max).split('+');
+						c1 = parseFloat(c[0]);
+						c2 = parseFloat(c[1]);
+						c = c1+c2;
+					}
+					if(cuk == indsous && prio == 4){
+						c = str.substring(min,max).split('-');
+						c1 = parseFloat(c[0]);
+						c2 = parseFloat(c[1]);
+						c = c1-c2;
+					}
+					//	console.log(cu, cin,cuk,prek, nexk, c);
+					grid.assemble(c, str, min, max);
 				});
 			}
 		},
+		assemble : (c, str, min, max)=>{
+			if(c && Number.isInteger(c)){
+				let start = str.substr(0, min);
+				let end = str.substr(max, str.length);
+				var res = start.concat(c, end);
+				if(res.indexOf('e') != -1){
+					console.log('transform e');
+					calc = res.replace('e+', '__');	
+				}else{
+					calc = res;
+				}
+				console.log('pass', c, start, end , res, calc);
+				grid.calculus(calc);
+			}else if(c != null && !Number.isNaN(c)){
+				console.log("NO PASS ", c);
+			}
+
+		},
 		splitAndSolve : (pattern, operator)=>{
 			if(pattern && operator){
-				var arr = pattern.split(operator);
-				var a1 = parseFloat(arr[0]);
-				var a2 = parseFloat(arr[1]);
+				if(pattern.indexOf('e+') !=  -1){
+					pattern = pattern.replace('e+', '__');
+					let arr = pattern.split(operator);
+					arr[0].replace('__', 'e+');
+					arr[1].replace('__', 'e+');
+					let a1 = parseFloat(arr[0]);
+					let a2 = parseFloat(arr[1]);	
+					console.log(pattern, arr, arr[0], arr[1], a1, a2);
+					//sStop
+				}else{
+					var arr = pattern.split(operator);
+					var a1 = parseFloat(arr[0]);
+					var a2 = parseFloat(arr[1]);
+				}
 				var result = null;
 				switch(operator){
 					case '/' : result = a1 / a2; break;
@@ -235,6 +299,9 @@ app.factory('gridManager', ($http)=>{
 				}
 				if(kcu == '^'){
 					priority.push(2);
+				}
+				if(kcu == 'e+'){
+					priority.push(3);
 				}
 				if(kcu == '*' || kcu == '/'){
 					priority.push(3);
