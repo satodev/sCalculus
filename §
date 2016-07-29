@@ -11,7 +11,6 @@ app.factory('gridManager', ($http)=>{
 				let current_grid = data.data[0].box;
 				for(let i in current_grid){
 					let box = document.getElementById(i);
-					grid.calc(current_grid[i]);
 					//grid.calculus(current_grid[i]);
 					box.setAttribute('data-func', grid.res_calculus);
 					box.innerHTML = current_grid[i];
@@ -318,112 +317,6 @@ app.factory('gridManager', ($http)=>{
 				}
 			});
 			return priority.sort()[0];
-		},
-		calc :(str)=>{
-			var obj = {
-				str : null, 
-				par: [],
-				symb:[],
-				calc : null,
-				setStr : (str)=>{
-					obj.str = str.trim();
-				},
-				defineProperties:()=>{
-					operator = ['*', '/', '+', '-', '%', '^'];
-					p = ['(',')'];
-					for(var i = 0; i< obj.str.length; i++){
-						if(Number.isNaN(Number.parseFloat(obj.str[i]))){  
-							if(operator.indexOf(obj.str[i]) != -1){
-								obj.symb.push({index:i, symbol: obj.str[i]});
-							}
-							if(p.indexOf(obj.str[i]) != -1){
-								obj.par.push({index: i, symbol : obj.str[i]});
-							}
-						}
-					}
-				},
-				parseStr:(str)=>{
-					str = (str) ? str : obj.str;
-					if(obj.par.length >= 1){
-						obj.par.map((cu, ci, carr)=>{
-							var prev = (carr[ci -1]) ? carr[ci-1]["index"] : 0;
-							var next = (carr[ci + 1]) ? carr[ci + 1] : str.length;	
-							if(cu['symbol'] == "(" && next["symbol"] == ")"){
-								console.log('create group between : '+ cu['index'] + ":" + next["index"]);	
-								obj.createGroup(cu["index"],next["index"]);
-							}
-							console.log(obj.str, cu["index"], ci, carr, prev, next);
-						});
-					}
-					if(obj.symb.length >= 1){
-						obj.symb.map((cu,ci,carr)=>{
-							console.log(obj.str, cu, ci ,carr);
-						});	
-					}		
-				},
-				createGroup: (start, end)=>{
-					let s = obj.str[start];
-					let e = obj.str[end];
-					let op = [];
-					let res = "";
-					console.log(start, end, s, e);
-					obj.symb.map((cu, ci, carr)=>{
-						//console.log(cu, ci, carr, cu["index"]);
-						if(cu["index"] < end && cu["index"] > start){
-							console.log(cu["index"]);
-							op.push(cu);	
-						}
-					});
-					str = obj.str.substring(start+1, end);
-					//console.log(op, op[0]['index'], op[0]['symbol'], op.length);
-					if(op.length <= 1){
-						res = obj.solvePattern(start+1, end, op[0]);
-						let prePartialString = obj.str.substring(start, end+1);
-						let str = obj.str.replace(prePartialString, res);
-						//recursive here
-						// obj.parseStr(str);
-						//sStop
-						console.log(res, start+1, end , op[0], prePartialString);
-					}
-				},
-				solvePattern : (start, end, op)=>{
-					console.log(start, end, op);
-					let str = "";
-					let res = 0;
-					str = obj.str.substring(start, end);
-					str = str.split(op['symbol']);
-					console.log(str);
-					let a1 = parseFloat(str[0]);
-					let a2 = parseFloat(str[1]);
-					switch(op['symbol']){
-						case '*' :
-							res = a1 * a2;
-						break;
-						case '/' : 
-							res = a1 / a2;
-						break;
-						case '+':
-							res = a1 + a2;
-						break;
-						case '-':	
-							res = a1 - a2;
-						break;
-						case '%':
-							res = a1 % a2;
-						break;
-						case '^':
-							res = Math.pow(a1, a2);
-						break;
-							
-					}
-					console.log(a1,op['symbol'], a2, '=', res);
-					return res;
-				}
-			}	
-			obj.setStr(str);
-			obj.defineProperties();
-			obj.parseStr();
-			//console.log(obj.str, obj.symb, obj.par);
 		}
 	}
 	return {
