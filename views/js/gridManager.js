@@ -10,7 +10,7 @@ app.factory('gridManager', ($http, scalculus)=>{
 				let current_grid = data.data[0].box;
 				for(let i in current_grid){
 					let box = document.getElementById(i);
-					var res = scalculus.solvePattern(current_grid[i]);
+					let res =  scalculus.inite(current_grid[i]);
 					box.setAttribute('data-func', res);
 					box.innerHTML = current_grid[i];
 					box.value = current_grid[i];
