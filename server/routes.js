@@ -77,7 +77,7 @@ routes.post('/grid', (req, res)=>{
 		m.connect();
 		m.query.exec((err, grid)=>{
 			if(err) console.log(err);
-			if(grid.length == 0){
+			if(!grid || grid.length == 0){
 				m.qSaveGrid(req.body.id_user, req.body.content);
 				m.query.save((err, grid)=>{
 					if(err) console.log(err);

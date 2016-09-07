@@ -1,4 +1,4 @@
-app.factory('gridManager', ($http, scalculus)=>{
+app.factory('gridManager', ($http, scalc)=>{
 	var grid = {
 		cont : document.getElementById('sCalculus'),
 		content: {},
@@ -10,7 +10,7 @@ app.factory('gridManager', ($http, scalculus)=>{
 				let current_grid = data.data[0].box;
 				for(let i in current_grid){
 					let box = document.getElementById(i);
-					let res =  scalculus.inite(current_grid[i]);
+					let res = scalc.init({str : current_grid[i], box : i});
 					box.setAttribute('data-func', res);
 					box.innerHTML = current_grid[i];
 					box.value = current_grid[i];

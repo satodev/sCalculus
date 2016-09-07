@@ -1,5 +1,5 @@
 var app = angular.module('scalculus', []);
-app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManager', 'gridManager',($scope, $http, login, subscribe, cookieManager, gridManager)=>{
+app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManager', 'gridManager', 'scalc',($scope, $http, login, subscribe, cookieManager, gridManager, scalc)=>{
 	$scope.select_state = false;
 	gridManager.create();
 	document.onreadystatechange = function(){
@@ -8,15 +8,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 			if(username){
 				$scope.user_log = username;
 				$scope.user_id = cookieManager.r(1);
-				$scope.grid_alert = 'loading';
-				gridManager.gen($scope.user_id).then((grids)=>{
-					if(grids){
-						gridManager.build(grids);
-						$scope.grid_alert = "ok";
-					}else{
-						$scope.grid_alert = "problem while loading";
-					}
-				});
+				$scope.gridLoad();
 			}else{
 				$scope.user_log = '';
 				$scope.user_id = '';
@@ -87,18 +79,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				$scope.user_log = res.data.name;	
 				$scope.user_id = res.data._id;
 				gridManager.del();
-				gridManager.gen($scope.user_id).then((grids)=>{
-					if(grids){
-						gridManager.build(grids);
-						let current_grid = grids.data[0].box;
-						//for futur theoretical multi tabs sheets
-						//	for(let i in current_grid){
-						//		console.log(current_grid[i], i);						
-						//	}
-					}
-				}).finally(()=>{
-					$scope.grid_alert = 'ok';	
-				});
+				$scope.gridLoad();
 			}else{
 				$scope.loginStatus = 'Fail to Authenticate';
 			}
@@ -127,6 +108,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		gridManager.gen($scope.user_id).then((grids)=>{
 			if(grids){
 				gridManager.build(grids);
+				//scalc.init(grids); //answers in scalc.ares
 				let current_grid = grids.data[0].box;
 				//for(let i in current_grid){
 				//		console.log(current_grid[i], i);						
@@ -153,12 +135,12 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		let elem = $event.target;
 		if(elem.getAttribute('disabled') == null && elem.classList.contains('box')){
 			$scope.current_coor = elem.getAttribute('id');
+			scalc.init({str : elem.value, box : elem.getAttribute("id")}); 
 		}
 		if($scope.current_coor){
 			let fnc = document.getElementById('fnc');
 			$scope.current_coor_value = $event.target.value;
 			fnc.value = $scope.current_coor_value;
-
 		}
 	}
 	$scope.gridSelect = function(){
