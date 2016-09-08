@@ -11,7 +11,12 @@ app.factory('gridManager', ($http, scalc)=>{
 				for(let i in current_grid){
 					let box = document.getElementById(i);
 					let res = scalc.init({str : current_grid[i], box : i});
-					box.setAttribute('data-func', res);
+					console.log(scalc.ares);
+					let current_box_res;
+					scalc.ares.map((cu)=>{if(cu.box == i){current_box_res = cu}});
+					console.log(current_box_res);
+					box.setAttribute('data-res', current_box_res.res);
+					box.setAttribute('data-func', current_grid[i]);
 					box.innerHTML = current_grid[i];
 					box.value = current_grid[i];
 				}

@@ -133,9 +133,16 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		$scope.shortcuts($event);
 		$scope.showBoxState($event.target);
 		let elem = $event.target;
+		let current_box_res;
 		if(elem.getAttribute('disabled') == null && elem.classList.contains('box')){
 			$scope.current_coor = elem.getAttribute('id');
-			scalc.init({str : elem.value, box : elem.getAttribute("id")}); 
+			scalc.init({str : elem.value, box :$scope.current_coor}); 
+			scalc.ares.map((cu)=>{if(cu.box == $scope.current_coor){current_box_res = cu}});
+			if(current_box_res){
+				elem.setAttribute('data-res', current_box_res.res);
+				elem.setAttribute('data-func', elem.value);
+				elem.innerHTML = elem.value;
+			}
 		}
 		if($scope.current_coor){
 			let fnc = document.getElementById('fnc');
@@ -184,26 +191,20 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 	}
 	$scope.fncSetContent = function($event){
 		let box = document.getElementById($scope.current_coor);
+		let current_box_res;
 		$scope.current_coor_value = $event.target.value;
 		box.value = $scope.current_coor_value;
 		box.innerHTML = $scope.current_coor_value;
-
+		scalc.init({str : $event.target.value, box : $scope.current_coor});
+		scalc.ares.map((cu)=>{if(cu.box == $scope.current_coor){current_box_res = cu}});
+		if(current_box_res){
+			box.setAttribute('data-res', current_box_res.res);
+			box.setAttribute('data-func', $scope.current_coor_value);
+			box.innerHTML = $scope.current_coor_value;
+		}
 		if($event.which == 70 && $event.isTrusted && $event.ctrlKey && $event.altKey){
 			box.focus();
 		}
-	}
-	$scope.showBoxState = function(tgt){
-		tgt.onfocus = function(f){
-			$scope.showBoxFormula(f);
-		}
-		tgt.onblur = function(b){
-			$scope.showBoxResult(b);
-		}
-	}
-	$scope.showBoxFormula = function(focus){
-			
-	}
-	$scope.showBoxResult = function(blur){
 	}
 	$scope.shortcuts = function($event){
 		if($event.which == 83 && $event.isTrusted && $event.altKey){

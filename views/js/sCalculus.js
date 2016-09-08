@@ -1,19 +1,10 @@
 app.factory('scalc', ()=>{
 	scalc = {
 		ops : [],
-		array_op : [],
 		prio : [],
 		nums : [],
 		ares : [],
-		error : "",
 		auth_ops : ["^", "*", "/", "%", "+", "-"],
-		strtoArray : ()=>{
-			let array = [];
-			for(var i = 0 ; i < scalc.op.length ;i++){
-				array.push(scalc.op[i]);	
-			}
-			scalc.array_op = array;
-		},
 		catchCurrentOp : (op)=>{
 			scalc.op = op;	
 		},
@@ -26,7 +17,7 @@ app.factory('scalc', ()=>{
 		multipleOp : (op)=>{
 			for(let i in op.data[0].box){
 				if(scalc.isValid(op.data[0].box[i], i)){
-					scalc.initCalculate(op.data[0].box[i]);
+					scalc.initCalculate(op.data[0].box[i], i);
 				}	
 			}
 			return scalc.ares;
@@ -35,20 +26,21 @@ app.factory('scalc', ()=>{
 			let eq = op.str;
 			let box = op.box;
 			if(scalc.isValid(eq, box)){
-				let res = scalc.initCalculate(eq);
+				let res = scalc.initCalculate(eq, box);
 				return res;
 			}
 		},
-		initCalculate : (str)=>{
+		initCalculate : (str, box)=>{
+			console.log(str, box);
 			scalc.op = (str) ?str :scalc.op;
 			let res = null;
 			let ops = scalc.detectOps(); //op | pos | pri
 			let num = scalc.detectNumber();
 			let gprth = scalc.detectAndGroupPrth();
 			if(gprth.length > 0){
-				let group = scalc.isolateGroupPrth(gprth); // return t[1,2,3] + index
+				let group = scalc.isolateGroupPrth(gprth); 
 				let prio_group = scalc.isolateOperation(group, gprth);
-				let final_res = scalc.resolve(prio_group); //i : str_op_prio, r: res_str 
+				let final_res = scalc.resolve(prio_group); 
 				console.log(final_res);
 				res = final_res;
 			}else if(ops.length > 0){
@@ -59,14 +51,25 @@ app.factory('scalc', ()=>{
 			let res_ops = scalc.detectOps(res);
 			if(res_ops.length != 0){ 
 				console.log("recurse");
-				scalc.initCalculate(res);
+				scalc.initCalculate(res, box);
 			}else{ 
 				console.log("final res");
-				scalc.ares.push(res);
+				let verif_ares = scalc.ares.map((cu,ci,car)=>{ return cu.box}).indexOf(box);
+				console.log(verif_ares);
+				if(verif_ares == -1){
+					scalc.ares.push({box : box, res : res});
+				}else{
+					scalc.ares[verif_ares].res = res;
+				}
 				return true;
 			}
 		},
 		resolve : (prio_group)=>{
+			if(prio_group.op == 0){
+				let fres = [prio_group.obj[0], prio_group.obj[1], prio_group.obj[2]];
+				console.log(fres.join(""), prio_group);
+				return fres.join("");
+			}
 			let eq = prio_group.obj[1];
 			let op = prio_group.op["op"];
 			let sp = eq.split(op);
@@ -117,27 +120,29 @@ app.factory('scalc', ()=>{
 			return {obj : [spo, so, sno], op: o}
 		},
 		isolateOperation: (group, gprth)=>{
+			let pop, op, nop, p, pp, n ,np, res_obj;
+			let prio =[];
 			let g1 = group[0];
 			let g2 = group[1];// subdevide into 3 group with the actual operation on index 1
 			let g3 = group[2];
-			let prio =[];
-			let res_obj;
 			console.log(g2, typeof g2);
 			let sg2op = scalc.detectOps(g2).sort((a,b)=>{return a.pri - b.pri})[0];
 			let g2op = scalc.detectOps(g2);
-			let pop, op, nop;
-			for(var i = 0; i < g2op.length; i++){
-				if(g2op[i].pos == sg2op.pos){
-					pop = (g2op[i-1]) ? g2op[i-1] : 0;
-					op = g2op[i];
-					nop = (g2op[i+1]) ? g2op[i+1] : g2.length;
-					break;
+			console.log(g2op);
+			if(g2op && g2op.length > 0){
+				for(var i = 0; i < g2op.length; i++){
+					if(g2op[i].pos == sg2op.pos){
+						pop = (g2op[i-1]) ? g2op[i-1] : 0;
+						op = g2op[i];
+						nop = (g2op[i+1]) ? g2op[i+1] : g2.length;
+						break;
+					}
 				}
+				p = pop;
+				pp = pop["pos"];
+				n = nop;
+				np = nop["pos"];
 			}
-			let p = pop;
-			let pp = pop["pos"];
-			let n = nop;
-			let np = nop["pos"];
 			if(g2op.length > 1){
 				let p1 = (p && pp > 0) ? scalc.ss(g2, 0, pp+1) : (!p && g2op.length > 1) ? scalc.ss(g2, 0, 1) : (!p && g2op.length == 1) ? "" : console.log("p1 problem");
 				//console.log(p1, pp, g2, g2op);
@@ -159,6 +164,13 @@ app.factory('scalc', ()=>{
 				console.log(p1,p2,p3);
 				res_obj = {obj : [p1,p2,p3], op : op};
 			}
+			if(g2op.length == 0){
+				console.log("gat ya");
+				console.log(group);
+				let gr = group[1].substring(1, group[1].length-1);
+				console.log(gr);
+				res_obj = {obj : [group[0], gr, group[2]], op: 0};
+			}
 			return res_obj;
 		},
 		isolateGroupPrth : (gprth, string)=>{
@@ -173,6 +185,7 @@ app.factory('scalc', ()=>{
 		detectAndGroupPrth : (string)=>{
 			let str = (string) ? string : scalc.op;
 			let prth = scalc.detectPrth(str);
+			console.log(prth);
 			let gprth = scalc.groupPrth(prth);
 			return gprth;
 		},
@@ -255,32 +268,55 @@ app.factory('scalc', ()=>{
 				alert("ss error : not a string or, no valid entry points");
 			}
 		},
-		isValid : (string, box)=>{
-			let valid_num = false;
-			let valid_prth = false;
-			let op = scalc.detectOps(string);
-			let prth = scalc.detectPrth(string);
-			let b = document.getElementById(box);
-			scalc.nums = "";
-			scalc.detectNumber(string);
-			if(scalc.nums && op){
-				if(scalc.nums.length == op.length +1){
-					valid_num = true;
+		countPairsPrth : (string)=>{
+			let str = (string) ? string : scalc.op;
+			let lprth = 0;
+			let rprth = 0;
+			for(var i = 0; i < str.length; i++){
+				if(str[i] == "("){
+					lprth++
 				}
-				if(prth.length > 0 ){
-					if(prth.length % 2 == 0){
+				if(str[i] == ")"){
+					rprth++
+				}
+			}
+			return [lprth, rprth]
+		},
+		isValid : (string, box)=>{
+			if(string && box){
+				let valid_num = false;
+				let valid_prth = false;
+				let op = scalc.detectOps(string);
+				let prth = scalc.countPairsPrth(string);
+				let b = document.getElementById(box);
+				scalc.nums = "";
+				scalc.detectNumber(string);
+				if(scalc.nums && op){
+					if(scalc.nums.length == op.length +1){
+						valid_num = true;
+					}else{
+						valid_num = false;
+					}
+					if(prth[0] > 0  || prth[1] > 0){
+						let total_prth = prth[0]+prth[1];
+						if(prth[0] == prth[1] && total_prth % 2 == 0){
+							valid_prth = true;
+						}else{
+							valid_prth = false;
+						}
+					}else{
 						valid_prth = true;
 					}
 				}else{
-					valid_prth = true;
+					valid_num = false;
 				}
-			}
-			if(valid_num && valid_prth){
-				(b.classList.contains("e_syntax"))? b.classList.remove("e_syntax") : "";
-				return true;
-			}else{
-				b.classList.add("e_syntax");
-				return false;
+				if(valid_num && valid_prth){
+					(b.classList.contains("e_syntax"))? b.classList.remove("e_syntax") : "";
+					return true;
+				}else{
+					(!b.classList.contains("e_syntax"))? b.classList.add("e_syntax") : "";
+					return false;
+				}
 			}
 		},
 	}
