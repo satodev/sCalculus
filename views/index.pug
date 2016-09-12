@@ -47,6 +47,7 @@ html(ng-app="scalculus")
 				button(ng-click="gridSave()") Save
 				button(id="select_btn", ng-click="gridSelect()") Select 
 				button(id="select_paste", ng-show="coord", ng-click="gridSelectPaste()") Paste
+				button(id="toggle_res_func", ng-click="toggleResFunc()") Toggle Result/Func
 				button Add
 				button Substract
 				button Multiply
@@ -59,3 +60,4 @@ html(ng-app="scalculus")
 		script(src="/views/js/subscribe.js")
 		script(src="/views/js/gridManager.js")
 		script(src="/views/js/sCalculus.js")
+		script(src="/views/js/coordinatesTranslator.js")
