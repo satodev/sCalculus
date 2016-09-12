@@ -1,32 +1,66 @@
 doctype html
-html(ng-app="scalculus")
+html(lang="en", ng-app="scalculus")
 	head 
-		title sCalculus
+		meta(charset="utf-8")
+		meta(http-equiv="X-UA-Compatible",content="IE=edge")
+		meta(name="viewport", content="width=device-width, initial-scale=1")
+		link(href="/node_modules/bootstrap/dist/css/bootstrap.min.css", rel="stylesheet")
 		link(rel="stylesheet", type="text/css", href="/views/css/style.css")
+		title sCalculus
 	body(ng-cloak, ng-controller="sCalCtrl")
-		div
-			h1 Auth Module
-			h2 Subscribe
-			input(type="text",ng-model="userName", placeholder="Pseudo")
-			input(type="password",ng-model="userPwd", ng-keyup="passwordConfirm($event)", placeholder="Password")
-			input(type="password",ng-model="vuserPwd", placeholder="Enter Password Again")
-			input(type="submit", ng-if="passConf && userPwd == vuserPwd", ng-click="subscribe()")
-			span(ng-show="register_loading") Loading...
-			span(ng-if="stateSub") {{stateSub}}
-
-			h2 Log In
-			input(type="text", ng-model="logUser", placeholder="Pseudo")
-			input(type="password", ng-model="logPwd", placeholder="Password")
-			input(type="submit", ng-click="login()")
-			span(ng-show="Login_loading") Loading...
-			span(ng-if="loginStatus && logUser && logPwd") {{loginStatus}}
+		nav(class="navbar navbar-default navbar-fixed-top")
+			div.container-fluid
+				div.navbar-header
+					button(type="button", class="navbar-toggle collapsed", data-toggle="collapse", data-target="#bs-example-navbar-collapse-1", aria-expanded="false")
+						span.sr-only Toggle navigation
+						span.icon-bar
+						span.icon-bar
+						span.icon-bar
+					a.navbar-brand(href="/") sCalculus
+				div.collapse.navbar-collapse#bs-example-navbar-collapse-1
+					ul.nav.navbar-nav
+						li
+							a(href="#", data-toggle="modal", data-target="#myModal") Subscribe
+						li
+							a(href="#", data-toggle="modal", data-target="#myModal2") Login
+		div(class="modal fade", id="myModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabel")
+			div(class="modal-dialog", role="document")
+				div(class="modal-content")
+					div(class="modal-header")
+						button(type="button", class="close", data-dismiss="modal", aria-label="Close")
+							span(aria-hidden="true") &times;
+						h2(class="modal-title", id="myModalLabel") Subscribe
+					div(class="modal-body")
+						form
+							input(class="form-control", type="text",ng-model="userName", placeholder="Pseudo")
+							input(class="form-control", type="password",ng-model="userPwd", ng-keyup="passwordConfirm($event)", placeholder="Password")
+							input(class="form-control", type="password",ng-model="vuserPwd", placeholder="Enter Password Again")
+							input(class="form-control", type="submit", ng-if="passConf && userPwd == vuserPwd", ng-click="subscribe()")
+					div(class="modal-footer")
+						span(ng-show="register_loading") Loading...
+						span(ng-if="stateSub") {{stateSub}}
+		div(class="modal fade", id="myModal2", tabindex="-1", role="dialog", aria-labelledby="myMovalLabel2")
+			div(class="modal-dialog", role="document")
+				div(class="modal-content")
+					div(class="modal-header")
+						button(type="button", class="close", data-dismiss="modal", aria-label="Close")
+							span(aria-hidden="true") &times;
+						h2(class="modal-title", id="myModalLabel2") Log In
+					div(class="modal-body")
+						form
+							input(class="form-control", type="text", ng-model="logUser", placeholder="Pseudo")
+							input(class="form-control", type="password", ng-model="logPwd", placeholder="Password")
+							input(class="form-control", type="submit", ng-click="login()")
+					div(class="modal-footer")
+						span(ng-show="Login_loading") Loading...
+						span(ng-if="loginStatus && logUser && logPwd") {{loginStatus}}
 			
-			h2 Disconnect
-			span(ng-show('user_log')) {{user_log}}
-			br 
-			span(ng-show('user_id')) {{user_id}}
-			br 
-			button(ng-click="disconnect()") Disconnect
+		h2 Disconnect
+		span(ng-show('user_log')) {{user_log}}
+		br 
+		span(ng-show('user_id')) {{user_id}}
+		br 
+		button(ng-click="disconnect()") Disconnect
 		div
 			h1 Status Bar 
 			div#status
@@ -61,3 +95,5 @@ html(ng-app="scalculus")
 		script(src="/views/js/gridManager.js")
 		script(src="/views/js/sCalculus.js")
 		script(src="/views/js/coordinatesTranslator.js")
+		script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
+		script(src="/node_modules/bootstrap/dist/js/bootstrap.min.js")
