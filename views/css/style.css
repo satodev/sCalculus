@@ -5,6 +5,12 @@ body{
 	padding-top: 55px;
 	padding-bottom :55px;
 }
+.navbar-default .navbar-brand{
+	color: #009d4e;
+}
+#bs-example-navbar-collapse-1 .glyphicon{
+	color: #009d4e;
+}
 .selected{
 	border-top: 1px solid #009d4e;
 }
@@ -20,7 +26,7 @@ body{
 	display:inline;
 }
 #sCalculus .box.disable{
-	background-color: grey;
+	background-color:#009d4e;
 	color: white;
 	text-align: center;
 }
