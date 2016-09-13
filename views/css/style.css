@@ -2,8 +2,8 @@
   	display: none !important;
 }
 body{
-	padding-top: 70px;
-	padding-bottom :70px;
+	padding-top: 55px;
+	padding-bottom :55px;
 }
 .selected{
 	border-top: 1px solid #009d4e;
@@ -36,4 +36,16 @@ body{
 }
 .e_syntax{
 	color : red;
+}
+.navtool{
+	background-color: white;
+	border: 0;
+}
+/*modif Bootstrap*/
+.navbar {
+	margin-bottom :0px;
+}
+#select_btn .btn-default:active{
+	background-color:black;
+	color:white;
 }

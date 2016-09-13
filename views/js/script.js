@@ -1,5 +1,7 @@
 var app = angular.module('scalculus', []);
 app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManager', 'gridManager', 'scalc', 'coord', ($scope, $http, login, subscribe, cookieManager, gridManager, scalc, coord)=>{
+	let m1 = document.getElementById("cm1");
+	let m2 = document.getElementById("cm2");
 	$scope.select_state = false;
 	gridManager.create();
 	document.onreadystatechange = function(){
@@ -49,6 +51,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				if(fullfill.data == 'nuser'){
 					subscribe.postSub('insertUser').then((success)=>{
 						$scope.stateSub = 'User Created';
+						cm1.click();
 					}, (fail)=>{
 						$scope.stateSub = 'Fail to Create User';
 					}).finally(()=>{
@@ -78,6 +81,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				cookieManager.w(3, res.data.date);
 				$scope.user_log = res.data.name;	
 				$scope.user_id = res.data._id;
+				cm2.click();		
 				gridManager.del();
 				$scope.gridLoad();
 			}else{
@@ -103,7 +107,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		}
 	}
 	$scope.gridLoad = function(){
-		$scope.grid_alert = 'loading';
+		$scope.grid_alert = 'Loading';
 		gridManager.del();
 		gridManager.gen($scope.user_id).then((grids)=>{
 			if(grids){
@@ -115,7 +119,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				//	}
 			}
 		}).finally(()=>{
-			$scope.grid_alert = 'ok';	
+			$scope.grid_alert = 'Grid Loaded';	
 		});
 	}
 	$scope.gridClicked = function($event){
@@ -125,7 +129,9 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		if(ae.getAttribute('disabled') == null && ae.classList.contains('box')){
 			$scope.current_coor = ae.getAttribute('id');
 			$scope.current_coor_value = $event.target.getAttribute('data-func');
+			if(fnc){
 			fnc.value = $scope.current_coor_value;
+			}
 		}
 	}
 	$scope.gridKeyUp = function($event){
@@ -162,7 +168,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 					gridManager.selectSingleBox();
 				}
 			}
-			select_btn.classList += " btn_active";
+			select_btn.classList += " active";
 		}else{
 			for(var i = 0; i < box.length; i++){
 				if(box[i].getAttribute('disabled') == null && box[i].classList.contains('selected')){
@@ -171,7 +177,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 				}
 			}
 			$scope.coord = array;
-			select_btn.classList.remove("btn_active");
+			select_btn.classList.remove("active");
 		}
 	}
 	$scope.gridSelectPaste = function(){

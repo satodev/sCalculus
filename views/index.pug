@@ -27,6 +27,12 @@ html(lang="en", ng-app="scalculus")
 							a(href="#", data-toggle="modal", data-target="#myModal2")
 								span.glyphicon.glyphicon-log-in(aria-hidden=true) 
 								span  Login 
+						li
+							a(href="#" data-toggle="modal", data-target="#myModal3")
+								span.glyphicon.glyphicon-question-sign(aria-hidden=true)
+								span  Help
+
+
 					ul.nav.navbar-nav.navbar-right(ng-if="user_log")
 						li
 							span.navbar-text(ng-show("user_log")) Hello, {{user_log}} 
@@ -38,7 +44,7 @@ html(lang="en", ng-app="scalculus")
 			div(class="modal-dialog", role="document")
 				div(class="modal-content")
 					div(class="modal-header")
-						button(type="button", class="close", data-dismiss="modal", aria-label="Close")
+						button(id="cm1", type="button", class="close", data-dismiss="modal", aria-label="Close")
 							span(aria-hidden="true") &times;
 						h2(class="modal-title", id="myModalLabel") Subscribe
 					div(class="modal-body")
@@ -54,32 +60,35 @@ html(lang="en", ng-app="scalculus")
 			div(class="modal-dialog", role="document")
 				div(class="modal-content")
 					div(class="modal-header")
-						button(type="button", class="close", data-dismiss="modal", aria-label="Close")
+						button(id="cm2" ,type="button", class="close", data-dismiss="modal", aria-label="Close")
 							span(aria-hidden="true") &times;
 						h2(class="modal-title", id="myModalLabel2") Log In
 					div(class="modal-body")
 						form
 							input(class="form-control", type="text", ng-model="logUser", placeholder="Pseudo")
 							input(class="form-control", type="password", ng-model="logPwd", placeholder="Password")
-							input(class="form-control", type="submit", ng-click="login()")
+							input(class="form-control", type="submit", ng-click="login()") 
 					div(class="modal-footer")
 						span(ng-show="Login_loading") Loading...
 						span(ng-if="loginStatus && logUser && logPwd") {{loginStatus}}
-		div#functions
+		nav.navbar.navbar-default.navtool
 			div.container-fluid
-				div.navbar-header
-				button(ng-click="gridLoad()") Refresh
-				button(ng-click="gridSave()") Save
-				button(id="select_btn", ng-click="gridSelect()") Select 
-				button(id="select_paste", ng-show="coord", ng-click="gridSelectPaste()") Paste
-				button(id="toggle_res_func", ng-click="toggleResFunc()") Toggle Result/Func
-
-		div
-			div#status
-				span(ng-show="grid_alert") {{grid_alert}}
-				br 
-				span(ng-show="current_coor") x:y = {{current_coor}}   ;
-				span(ng-show="coord") selected coord : {{coord}}
+				div.nav.navbar-nav
+					div.btn-group#functions(role="group", aria-label="...")
+						button(type="button", class="btn btn-default navbar-btn", ng-click="gridLoad()", title="Refresh")
+							span.glyphicon.glyphicon-refresh
+						button(type="button", class="btn btn-default navbar-btn", ng-click="gridSave()", title="Save") 
+							span.glyphicon.glyphicon-floppy-disk(aria-hidden=true)
+						button(type="button", class="btn btn-default navbar-btn", id="select_btn", ng-click="gridSelect()", title="Select") 
+							span.glyphicon.glyphicon-th(aria-hidden=true)
+						button(type="button", class="btn btn-default navbar-btn", id="select_paste", ng-show="coord", ng-click="gridSelectPaste()", title="Paste")
+							span.glyphicon.glyphicon-import(aria-hidden=true)
+						button(type="button", class="btn btn-default navbar-btn", id="toggle_res_func", ng-click="toggleResFunc()", title="Toggle display")
+							span.glyphicon.glyphicon-adjust(aria-hidden=true)
+				div.nav.navbar-nav.navbar-right
+					span#status
+					span.navbar-text(ng-show="coord && coord.length > 0") Selected Grid : {{coord}}
+					span.navbar-text(ng-show="grid_alert") {{grid_alert}}
 		div 
 			div(ng-keydown="gridKeyDown($event)", ng-keyup="gridKeyUp($event)", ng-click="gridClicked($event)")#sCalculus
 		nav.navbar.navbar-default.navbar-fixed-bottom(ng-if="current_coor")
