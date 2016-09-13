@@ -216,7 +216,7 @@ app.factory('scalc', ()=>{
 				let pos = null;
 				if(!isNaN(str[i])){
 					pos = i;
-					if(str[i-1] == "-" ){ //detect negativ number symbol
+					if(str[i-1] == "-"){ //detect negativ number symbol
 						if(!str[i-2] || isNaN(str[i-2])){
 							pos--;
 							nums.push(str[i-1]);
