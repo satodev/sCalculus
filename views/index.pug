@@ -71,6 +71,55 @@ html(lang="en", ng-app="scalculus")
 					div(class="modal-footer")
 						span(ng-show="Login_loading") Loading...
 						span(ng-if="loginStatus && logUser && logPwd") {{loginStatus}}
+		div(class="modal fade", id="myModal3", tabindex="-1", role="dialog", aria-labelledby="myModalLabel3")
+			div(class="modal-dialog", role="document")
+				div(class="modal-content")
+					div(class="modal-header")
+						button(id="cm3", type="button", class="close", data-dismiss="modal", aria-label="Close")
+							span(aria-hidden=true) &times;
+						h2(class="modal-title", id="myModalLabel3") Help
+					div(class="modal-body")
+						h3 Membership
+						p You can save and load grid only if you validate the authentification process. I advice you to login if you don't want any bad surprises.
+						h3 Feature Functions
+						p Here are the function enable in this app : 
+						ul
+							li Refresh grid (wont save automatically)
+							li Save 
+							li Select (enable you to select multiple box and paste them into the current selected box)
+							li Toggle (toggle between function and results inside boxes)
+						h3 Operations
+						p Valid operators inside boxes are : 
+						ul
+							li Power with symbol 
+								kbd ^
+							li Modulus with symbol 
+								kbd %
+							li All other basic operation 
+								kbd (, *, /, +, -, )
+						h3 Shortcuts
+						p These shortcuts are only avaible if you click on the grid. Some plugins may interfer with these shortcuts.
+						p Refresh :
+							kbd CTRL + ALT + R
+						p Save : 
+							kbd CTRL + SHIFT + S
+						p Select Mode Toggle : 
+							kbd CTRL + ALT + S
+						p Select Box while in select mode : 
+							kbd CTRL + ALT + SPACE
+						p Paste : 
+							kbd CTRL + ALT + V
+						p Toggle : 
+							kbd CTRL + ALT + T
+						p Toggle Function bar or Box selection 
+							kbd CTRL + ALT + F
+						p Moving inside grid
+							kbd CTRL + ALT + ARROW KEY
+						
+					div(class="modal-footer")
+						span Application made by 
+							a(href="#") Satoru HEMMI
+					
 		nav.navbar.navbar-default.navtool
 			div.container-fluid
 				div.nav.navbar-nav
@@ -89,9 +138,8 @@ html(lang="en", ng-app="scalculus")
 					span#status
 					span.navbar-text(ng-show="coord && coord.length > 0") Selected Grid : {{coord}}
 					span.navbar-text(ng-show="grid_alert") {{grid_alert}}
-		div 
-			div(ng-keydown="gridKeyDown($event)", ng-keyup="gridKeyUp($event)", ng-click="gridClicked($event)")#sCalculus
-		nav.navbar.navbar-default.navbar-fixed-bottom(ng-if="current_coor")
+		div(ng-keydown="gridKeyDown($event)", ng-keyup="gridKeyUp($event)", ng-click="gridClicked($event)")#sCalculus
+		nav.navbar.navbar-default.navbar-fixed-bottom#footernav(ng-if="current_coor")
 			div.container-fluid
 				div.nav.navbar-nav.navbar-left
 					div.input-group

@@ -41,6 +41,16 @@ body{
 	background-color: white;
 	border: 0;
 }
+#footernav{
+	background-color:transparent;
+	padding-top: 6px;
+}
+#addon1{
+	border-color:#009d4e;
+}
+#fnc{
+	border-color:#009d4e;
+}
 /*modif Bootstrap*/
 .navbar {
 	margin-bottom :0px;
