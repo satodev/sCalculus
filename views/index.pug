@@ -20,9 +20,20 @@ html(lang="en", ng-app="scalculus")
 				div.collapse.navbar-collapse#bs-example-navbar-collapse-1
 					ul.nav.navbar-nav
 						li
-							a(href="#", data-toggle="modal", data-target="#myModal") Subscribe
+							a(href="#", data-toggle="modal", data-target="#myModal")
+								span.glyphicon.glyphicon-record(aria-hidden=true)
+								span  Subscribe
 						li
-							a(href="#", data-toggle="modal", data-target="#myModal2") Login
+							a(href="#", data-toggle="modal", data-target="#myModal2")
+								span.glyphicon.glyphicon-log-in(aria-hidden=true) 
+								span  Login 
+					ul.nav.navbar-nav.navbar-right(ng-if="user_log")
+						li
+							span.navbar-text(ng-show("user_log")) Hello, {{user_log}} 
+						li
+							a(href="#", ng-click="disconnect()") 
+								span.glyphicon.glyphicon-log-out(aria-hidden=true)
+								span  Logout
 		div(class="modal fade", id="myModal", tabindex="-1", role="dialog", aria-labelledby="myModalLabel")
 			div(class="modal-dialog", role="document")
 				div(class="modal-content")
@@ -55,12 +66,6 @@ html(lang="en", ng-app="scalculus")
 						span(ng-show="Login_loading") Loading...
 						span(ng-if="loginStatus && logUser && logPwd") {{loginStatus}}
 			
-		h2 Disconnect
-		span(ng-show('user_log')) {{user_log}}
-		br 
-		span(ng-show('user_id')) {{user_id}}
-		br 
-		button(ng-click="disconnect()") Disconnect
 		div
 			h1 Status Bar 
 			div#status
@@ -86,7 +91,9 @@ html(lang="en", ng-app="scalculus")
 				button Substract
 				button Multiply
 				button Divide
-
+		nav.navbar.navbar-default.navbar-fixed-bottom(ng-if="current_coor")
+			div.container-fluid
+				p hello	
 		script(src="/node_modules/angular/angular.min.js")
 		script(src="/views/js/script.js")
 		script(src="/views/js/cookieManager.js")
