@@ -3,6 +3,7 @@
 }
 body{
 	padding-top: 70px;
+	padding-bottom :70px;
 }
 .selected{
 	border-top: 1px solid #009d4e;

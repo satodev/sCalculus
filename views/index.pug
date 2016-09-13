@@ -65,35 +65,29 @@ html(lang="en", ng-app="scalculus")
 					div(class="modal-footer")
 						span(ng-show="Login_loading") Loading...
 						span(ng-if="loginStatus && logUser && logPwd") {{loginStatus}}
-			
+		div#functions
+			div.container-fluid
+				div.navbar-header
+				button(ng-click="gridLoad()") Refresh
+				button(ng-click="gridSave()") Save
+				button(id="select_btn", ng-click="gridSelect()") Select 
+				button(id="select_paste", ng-show="coord", ng-click="gridSelectPaste()") Paste
+				button(id="toggle_res_func", ng-click="toggleResFunc()") Toggle Result/Func
+
 		div
-			h1 Status Bar 
 			div#status
 				span(ng-show="grid_alert") {{grid_alert}}
 				br 
 				span(ng-show="current_coor") x:y = {{current_coor}}   ;
 				span(ng-show="coord") selected coord : {{coord}}
 		div 
-			h1 Grid System
 			div(ng-keydown="gridKeyDown($event)", ng-keyup="gridKeyUp($event)", ng-click="gridClicked($event)")#sCalculus
-		div 
-			h1 Functions
-			span(ng-show="current_coor") {{current_coor}} = 
-			input(ng-show="current_coor", id="fnc", type="text", ng-click="fncGetContent()", ng-keyup="fncSetContent($event)")
-			h2 Basic Functions
-			div#functions
-				button(ng-click="gridLoad()") Refresh
-				button(ng-click="gridSave()") Save
-				button(id="select_btn", ng-click="gridSelect()") Select 
-				button(id="select_paste", ng-show="coord", ng-click="gridSelectPaste()") Paste
-				button(id="toggle_res_func", ng-click="toggleResFunc()") Toggle Result/Func
-				button Add
-				button Substract
-				button Multiply
-				button Divide
 		nav.navbar.navbar-default.navbar-fixed-bottom(ng-if="current_coor")
 			div.container-fluid
-				p hello	
+				div.nav.navbar-nav.navbar-left
+					div.input-group
+						span.input-group-addon#addon1(ng-show="current_coor") {{current_coor}} = 
+						input.form-control(aria-describeby="addon1", ng-show="current_coor", id="fnc", type="text", ng-click="fncGetContent()", ng-keyup="fncSetContent($event)")
 		script(src="/node_modules/angular/angular.min.js")
 		script(src="/views/js/script.js")
 		script(src="/views/js/cookieManager.js")

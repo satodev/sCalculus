@@ -24,8 +24,8 @@ app.factory('gridManager', ($http, scalc, coord)=>{
 		},
 		create : ()=>{
 			let container = grid.cont;
-			for(var i = 0; i < 10; i++){
-				for(var j = 0; j < 26; j++){
+			for(var i = 0; i < 15; i++){
+				for(var j = 0; j < 15; j++){
 					if(i == 0 && j == 0){
 						container.innerHTML += '<textarea class="box display disable reduce" id="'+i+'" disabled>x:y</textarea>';	
 					}else if(j == 0){
