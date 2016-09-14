@@ -214,7 +214,7 @@ app.factory('scalc', ()=>{
 			for(var i = 0; i < str.length; i++){
 				let nums = [];
 				let pos = null;
-				if(!isNaN(str[i])){
+				if(!isNaN(str[i])|| str[i] == "."){
 					pos = i;
 					if(str[i-1] == "-"){ //detect negativ number symbol
 						if(!str[i-2] || isNaN(str[i-2])){
@@ -222,7 +222,7 @@ app.factory('scalc', ()=>{
 							nums.push(str[i-1]);
 						}
 					}
-					while(!isNaN(str[i])){
+					while(!isNaN(str[i]) || str[i] == "."){
 						nums.push(str[i]);
 						i++
 					}

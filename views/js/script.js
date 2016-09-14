@@ -92,6 +92,7 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		});
 	}
 	$scope.gridSave = function(){
+		$scope.showAllFunc();
 		gridManager.getContent();
 		if($scope.user_id){
 			$scope.grid_alert = 'Saving';
@@ -184,7 +185,11 @@ app.controller('sCalCtrl', ['$scope', '$http', 'login','subscribe', 'cookieManag
 		let current_box = document.getElementById($scope.current_coor);
 		let coords = $scope.coord;
 		if(current_box.getAttribute('disabled') == null && current_box.classList.contains('box')){
-			current_box.innerHTML += coords;
+			let rescoords = [];
+			for(var i = 0; i< coords.length; i++){
+				rescoords.push(coord.translate(coords[i]));
+			}
+			current_box.innerHTML += rescoords.join(";")
 		}
 	}
 	$scope.fncGetContent = function(){
