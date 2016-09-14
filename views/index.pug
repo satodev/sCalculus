@@ -84,10 +84,21 @@ html(lang="en", ng-app="scalculus")
 						h3 Feature Functions
 						p Here are the function enable in this app : 
 						ul
-							li Refresh grid (wont save automatically)
-							li Save 
-							li Select (enable you to select multiple box and paste them into the current selected box)
-							li Toggle (toggle between function and results inside boxes)
+							li
+								span.glyphicon.glyphicon-refresh(aria-hidden=true)
+									span  Refresh grid (wont save automatically)
+							li 
+								span.glyphicon.glyphicon-floppy-disk 
+									span  Save 
+							li 
+								span.glyphicon.glyphicon-th
+									span  Select (enable you to select multiple box)
+							li 
+								span.glyphicon.glyphicon-import
+									span  Paste (paste selection)
+							li 
+								span.glyphicon.glyphicon-adjust
+									span  Toggle (toggle between function and results inside boxes)
 						h3 Operations
 						p Valid operators inside boxes are : 
 						ul
@@ -97,6 +108,13 @@ html(lang="en", ng-app="scalculus")
 								kbd %
 							li All other basic operation 
 								kbd (, *, /, +, -, )
+						h3 Coordinates
+						p You can use this system by using this form : 
+							kbd 1:2
+							span to refer to the box x = 1 and y = 2
+						p Multiselection box will give you multiple result separated by 
+							kbd ;
+							span . In this situation, you will have to replace the ";" by the operation of your choice.
 						h3 Shortcuts
 						p These shortcuts are only avaible if you click on the grid. Some plugins may interfer with these shortcuts.
 						p Refresh :
